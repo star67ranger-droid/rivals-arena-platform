@@ -1,7 +1,10 @@
 import { createClient } from '@supabase/supabase-js';
 
-// These should be in .env but for now we hardcode as requested
-const SUPABASE_URL = 'https://reujuxwofqdjnwhgygqa.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_jA1yL5OJV3rKB5XRaeQHZQ_aYvxw5XG';
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
+const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY as string;
 
-export const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+if (!SUPABASE_URL || !SUPABASE_KEY) {
+    console.error('Missing Supabase Environment Variables');
+}
+
+export const supabase = createClient(SUPABASE_URL || '', SUPABASE_KEY || '');
