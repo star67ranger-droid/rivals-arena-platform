@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Play, Users, Trophy, Calendar, ArrowRight, Trash2 } from 'lucide-react';
+import { Play, Users, Trophy, Calendar, ArrowRight, Trash2, Loader2 } from 'lucide-react';
 import { Tournament } from '../types';
 import { tournamentService } from '../services/tournamentService';
+import Skeleton from '../components/Skeleton';
+import { useToast } from '../context/ToastContext';
 
 interface TournamentCardProps {
   tournament: Tournament;
@@ -65,20 +67,31 @@ const TournamentCard: React.FC<TournamentCardProps> = ({ tournament, onDelete })
 
 const Dashboard: React.FC = () => {
   const [tournaments, setTournaments] = useState<Tournament[]>([]);
+  const [loading, setLoading] = useState(true);
   const [refresh, setRefresh] = useState(0);
+  const { showToast } = useToast();
 
   useEffect(() => {
     const load = async () => {
-      setTournaments(await tournamentService.getAll());
+      try {
+        setTournaments(await tournamentService.getAll());
+      } finally {
+        setLoading(false);
+      }
     };
     load();
   }, [refresh]);
 
   const handleDelete = async (e: React.MouseEvent, id: string) => {
-    e.preventDefault(); // Prevent navigation
+    e.preventDefault();
     if (confirm('Are you sure you want to delete this tournament? This cannot be undone.')) {
-      await tournamentService.delete(id);
-      setRefresh(prev => prev + 1);
+      try {
+        await tournamentService.delete(id);
+        showToast('Tournament deleted successfully', 'success');
+        setRefresh(prev => prev + 1);
+      } catch (err) {
+        showToast('Failed to delete tournament', 'error');
+      }
     }
   };
 
@@ -140,7 +153,21 @@ const Dashboard: React.FC = () => {
           )}
         </div>
 
-        {tournaments.length === 0 ? (
+        {loading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="bg-slate-900/50 rounded-xl border border-slate-800 p-5 h-[300px]">
+                <Skeleton className="h-32 mb-4" />
+                <Skeleton className="h-6 w-3/4 mb-2" variant="text" />
+                <Skeleton className="h-4 w-1/2 mb-4" variant="text" />
+                <div className="pt-4 border-t border-slate-800 flex justify-between">
+                  <Skeleton className="h-4 w-20" variant="text" />
+                  <Skeleton className="h-4 w-20" variant="text" />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : tournaments.length === 0 ? (
           <div className="text-center py-20 bg-slate-900/30 rounded-2xl border border-dashed border-slate-800">
             <Trophy size={48} className="mx-auto text-slate-700 mb-4" />
             <h3 className="text-lg font-bold text-slate-500">No tournaments yet</h3>

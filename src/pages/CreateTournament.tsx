@@ -2,10 +2,13 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { TournamentFormat, TeamSize } from '../types';
 import { tournamentService } from '../services/tournamentService';
-import { ChevronRight, Dna, Trophy, Calendar, AlertCircle } from 'lucide-react';
+import { ChevronRight, Dna, Trophy, Calendar, AlertCircle, Loader2 } from 'lucide-react';
+import { useToast } from '../context/ToastContext';
 
 const CreateTournament: React.FC = () => {
   const navigate = useNavigate();
+  const { showToast } = useToast();
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     name: '',
@@ -24,14 +27,18 @@ const CreateTournament: React.FC = () => {
     }
 
     try {
+      setLoading(true);
       const newTournament = await tournamentService.create(formData);
       if (newTournament) {
+        showToast('Tournament created successfully!', 'success');
         navigate(`/tournament/${newTournament.id}`);
       } else {
         setError("Failed to create tournament");
       }
     } catch (e) {
       setError("Failed to create tournament");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -141,9 +148,11 @@ const CreateTournament: React.FC = () => {
         <div className="flex justify-end pt-4">
           <button
             type="submit"
-            className="bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white font-bold py-3 px-8 rounded-lg shadow-lg shadow-violet-900/20 transform hover:-translate-y-0.5 transition-all flex items-center gap-2"
+            disabled={loading}
+            className="bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white font-bold py-3 px-8 rounded-lg shadow-lg shadow-violet-900/20 transform hover:-translate-y-0.5 transition-all flex items-center gap-2 disabled:opacity-50"
           >
-            Launch Tournament <ChevronRight size={18} />
+            {loading ? <Loader2 className="animate-spin" size={18} /> : null}
+            {loading ? 'Launching...' : 'Launch Tournament'} <ChevronRight size={18} />
           </button>
         </div>
       </form>

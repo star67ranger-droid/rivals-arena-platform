@@ -2,7 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { tournamentService } from '../services/tournamentService';
 import { playerService } from '../services/playerService';
 import { Tournament, UserProfile } from '../types';
-import { Shield, Trash2, FastForward, Save, RefreshCw, Trophy, Users, AlertTriangle } from 'lucide-react';
+import { Shield, Trash2, FastForward, Save, RefreshCw, Trophy, Users, AlertTriangle, Loader2 } from 'lucide-react';
+import { useToast } from '../context/ToastContext';
+import Skeleton from '../components/Skeleton';
 
 const Admin: React.FC = () => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -11,8 +13,10 @@ const Admin: React.FC = () => {
 
     const [tournaments, setTournaments] = useState<Tournament[]>([]);
     const [profiles, setProfiles] = useState<UserProfile[]>([]);
+    const [loading, setLoading] = useState(true);
     const [selectedProfile, setSelectedProfile] = useState<UserProfile | null>(null);
     const [searchTerm, setSearchTerm] = useState('');
+    const { showToast } = useToast();
 
     // Edit states
     const [editRating, setEditRating] = useState(0);
@@ -27,8 +31,12 @@ const Admin: React.FC = () => {
     }, []);
 
     const refreshData = async () => {
-        setTournaments(await tournamentService.getAll());
-        setProfiles(await playerService.getAll());
+        try {
+            setTournaments(await tournamentService.getAll());
+            setProfiles(await playerService.getAll());
+        } finally {
+            setLoading(false);
+        }
     };
 
     const handleLogin = async (e: React.FormEvent) => {
@@ -51,18 +59,27 @@ const Admin: React.FC = () => {
 
     const handleDeleteTournament = async (id: string) => {
         if (confirm('Are you sure you want to delete this tournament?')) {
-            await tournamentService.delete(id);
-            await refreshData();
+            try {
+                await tournamentService.delete(id);
+                showToast('Tournament deleted', 'success');
+                await refreshData();
+            } catch (err) {
+                showToast('Failed to delete', 'error');
+            }
         }
     };
 
     const handleForceStart = async (id: string) => {
-        const res = await tournamentService.startTournament(id);
-        if (res.success) {
-            alert(res.message);
-            await refreshData();
-        } else {
-            alert('Error: ' + res.message);
+        try {
+            const res = await tournamentService.startTournament(id);
+            if (res.success) {
+                showToast(res.message, 'success');
+                await refreshData();
+            } else {
+                showToast(res.message, 'error');
+            }
+        } catch (err) {
+            showToast('Error starting tournament', 'error');
         }
     };
 

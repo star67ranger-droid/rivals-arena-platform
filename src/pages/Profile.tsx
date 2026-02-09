@@ -2,25 +2,61 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { UserProfile } from '../types';
 import { playerService } from '../services/playerService';
-import { Trophy, Swords, Target, Share2, Twitter, MessageCircle } from 'lucide-react';
+import { Trophy, Swords, Target, Share2, Twitter, MessageCircle, MapPin, Calendar, Loader2 } from 'lucide-react';
+import { useToast } from '../context/ToastContext';
+import Skeleton from '../components/Skeleton';
 
 const Profile: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const [profile, setProfile] = useState<UserProfile | null>(null);
+    const [loading, setLoading] = useState(true);
+    const { showToast } = useToast();
 
     useEffect(() => {
         const load = async () => {
-            if (id) {
-                // Try searching by ID or username
-                const p = await playerService.getByName(id); // Using name as ID for simplicity in route
-                setProfile(p || null);
+            setLoading(true);
+            try {
+                if (id) {
+                    const p = await playerService.getByName(id);
+                    setProfile(p || null);
+                }
+            } finally {
+                setLoading(false);
             }
         };
         load();
     }, [id]);
 
+    const handleShare = () => {
+        navigator.clipboard.writeText(window.location.href);
+        showToast('Profile link copied to clipboard!', 'info');
+    };
+
+    if (loading) {
+        return (
+            <div className="max-w-4xl mx-auto space-y-8 animate-pulse">
+                <Skeleton className="h-64 w-full rounded-3xl" />
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    {[1, 2, 3, 4].map(i => <Skeleton key={i} className="h-24 rounded-2xl" />)}
+                </div>
+                <div className="space-y-4">
+                    <Skeleton className="h-10 w-48" variant="text" />
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {[1, 2].map(i => <Skeleton key={i} className="h-20 rounded-xl" />)}
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
     if (!profile) {
-        return <div className="text-center p-20 text-slate-500">Player not found</div>;
+        return (
+            <div className="text-center py-20 bg-slate-900/30 rounded-2xl border border-dashed border-slate-800 max-w-xl mx-auto mt-10">
+                <Swords size={48} className="mx-auto text-slate-700 mb-4" />
+                <h3 className="text-lg font-bold text-slate-500">Player not found</h3>
+                <p className="text-slate-600">This profile might be private or doesn't exist.</p>
+            </div>
+        );
     }
 
     return (
