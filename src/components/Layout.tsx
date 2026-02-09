@@ -12,15 +12,15 @@ const NavItem = ({ to, icon: Icon, label, pathname }: { to: string; icon: any; l
   return (
     <Link
       to={to}
-      className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 group ${isActive
-        ? 'bg-rivals-accent text-white shadow-[0_0_15px_rgba(139,92,246,0.5)]'
-        : 'text-slate-400 hover:text-white hover:bg-slate-800'
+      className={`relative flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 group ${isActive
+        ? 'bg-rivals-accent/20 text-white shadow-[0_0_20px_rgba(139,92,246,0.2)] border border-rivals-accent/30'
+        : 'text-slate-400 hover:text-white hover:bg-white/5'
         }`}
     >
-      <Icon size={20} className={isActive ? 'animate-pulse' : ''} />
-      <span className="font-medium">{label}</span>
+      <Icon size={20} className={`${isActive ? 'text-rivals-neon animate-pulse' : 'group-hover:text-rivals-accent'} transition-colors duration-300`} />
+      <span className={`font-semibold tracking-wide ${isActive ? 'neon-text' : ''}`}>{label}</span>
       {isActive && (
-        <div className="ml-auto w-1.5 h-1.5 rounded-full bg-cyan-400 shadow-[0_0_8px_#22d3ee]" />
+        <div className="absolute left-0 w-1 h-6 bg-rivals-neon rounded-r-full shadow-[0_0_10px_#22d3ee]" />
       )}
     </Link>
   );
@@ -31,77 +31,97 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const { user, isAdmin, logout } = useAuth();
 
   return (
-    <div className="flex min-h-screen bg-[#020617] text-white selection:bg-rivals-accent selection:text-white overflow-hidden">
+    <div className="flex min-h-screen bg-rivals-darker text-slate-100 font-sans selection:bg-rivals-accent/40 overflow-hidden relative">
+      {/* Dynamic Background Elements */}
+      <div className="fixed inset-0 bg-grid-pattern opacity-[0.03] pointer-events-none" />
+      <div className="fixed top-[-10%] left-[-10%] w-[40%] h-[40%] bg-rivals-accent/10 blur-[120px] rounded-full pointer-events-none animate-pulse" />
+      <div className="fixed bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-rivals-neon/10 blur-[120px] rounded-full pointer-events-none animate-pulse" style={{ animationDelay: '2s' }} />
+
       {/* Sidebar */}
-      <aside className="w-64 border-r border-slate-800 bg-[#0f172a] flex flex-col fixed h-full z-10 shadow-2xl">
-        <div className="p-6">
-          <div className="flex items-center gap-3 mb-8">
-            <div className="w-10 h-10 bg-gradient-to-br from-rivals-accent to-cyan-500 rounded-lg flex items-center justify-center shadow-lg shadow-violet-900/20">
-              <Swords size={24} className="text-white" />
+      <aside className="w-72 glass-heavy border-r border-white/5 flex flex-col fixed h-full z-50 transition-all duration-500">
+        <div className="p-8">
+          <div className="flex items-center gap-4 mb-12 group cursor-pointer">
+            <div className="relative">
+              <div className="w-12 h-12 bg-gradient-to-br from-rivals-accent to-rivals-neon rounded-2xl flex items-center justify-center shadow-lg shadow-rivals-accent/20 rotate-3 group-hover:rotate-12 transition-transform duration-500">
+                <Swords size={28} className="text-white" />
+              </div>
+              <div className="absolute -inset-1 bg-rivals-accent/20 blur opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl" />
             </div>
             <div>
-              <h1 className="text-xl font-bold tracking-tight">RIVALS<span className="text-cyan-400">ARENA</span></h1>
-              <p className="text-xs text-slate-500 font-mono text-[10px]">TOURNAMENT OS</p>
+              <h1 className="text-2xl font-black tracking-tighter italic">
+                RIVALS<span className="text-rivals-neon">ARENA</span>
+              </h1>
+              <div className="flex items-center gap-2">
+                <span className="h-1 w-8 bg-rivals-accent rounded-full" />
+                <p className="text-[10px] text-slate-500 font-mono tracking-[0.2em] font-bold">ULTIMATE EDITION</p>
+              </div>
             </div>
           </div>
 
-          <nav className="space-y-1">
-            <NavItem to="/" icon={LayoutDashboard} label="Dashboard" pathname={location.pathname} />
-
+          <nav className="space-y-2">
+            <p className="px-4 text-[10px] font-black text-slate-600 uppercase tracking-[0.3em] mb-4">Competitions</p>
+            <NavItem to="/" icon={LayoutDashboard} label="War Room" pathname={location.pathname} />
             {isAdmin && (
-              <NavItem to="/create" icon={PlusCircle} label="Create" pathname={location.pathname} />
+              <NavItem to="/create" icon={PlusCircle} label="Launch Event" pathname={location.pathname} />
             )}
+            <NavItem to="/leaderboard" icon={Trophy} label="Hall of Fame" pathname={location.pathname} />
 
-            <NavItem to={`/profile/${user?.id || 'me'}`} icon={User} label="Profile" pathname={location.pathname} />
-            <NavItem to="/leaderboard" icon={Trophy} label="Leaderboard" pathname={location.pathname} />
-
-            <div className="pt-4 pb-1">
-              <p className="px-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest">System</p>
-            </div>
-            <NavItem to="/settings" icon={Settings} label="Settings" pathname={location.pathname} />
+            <p className="px-4 text-[10px] font-black text-slate-600 uppercase tracking-[0.3em] mt-10 mb-4">Identity</p>
+            <NavItem to={`/profile/${user?.id || 'me'}`} icon={User} label="Combat Profile" pathname={location.pathname} />
+            <NavItem to="/settings" icon={Settings} label="System Settings" pathname={location.pathname} />
 
             {isAdmin && (
-              <NavItem to="/admin" icon={Shield} label="Admin" pathname={location.pathname} />
+              <div className="mt-8 pt-8 border-t border-white/5">
+                <NavItem to="/admin" icon={Shield} label="Central Intelligence" pathname={location.pathname} />
+              </div>
             )}
           </nav>
         </div>
 
-        <div className="mt-auto p-4 border-t border-slate-800/50">
-          <div className="flex items-center justify-between gap-2 bg-slate-900/50 p-3 rounded-xl border border-slate-800">
+        <div className="mt-auto p-6">
+          <div className="glass bg-white/5 p-4 rounded-2xl border border-white/10 flex items-center justify-between group hover:border-white/20 transition-all duration-300">
             <div className="flex items-center gap-3 overflow-hidden">
-              <div className="w-8 h-8 rounded bg-slate-800 border border-slate-700 flex items-center justify-center text-[10px] font-bold shrink-0 text-slate-400">
-                {user?.username ? String(user.username).substring(0, 2).toUpperCase() : 'GU'}
+              <div className="relative shrink-0">
+                <div className="w-10 h-10 rounded-xl bg-slate-800 flex items-center justify-center text-xs font-black text-rivals-neon border border-white/5 overflow-hidden">
+                  {user?.username ? String(user.username).substring(0, 2).toUpperCase() : '??'}
+                </div>
+                <div className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-emerald-500 border-2 border-rivals-dark animate-pulse" />
               </div>
               <div className="overflow-hidden">
-                <p className="text-xs font-bold truncate text-slate-200">{user?.username || 'Guest'}</p>
-                <p className="text-[9px] text-cyan-400 uppercase tracking-tighter font-black opacity-80">
-                  {user?.role || 'user'}
-                </p>
+                <p className="text-sm font-bold truncate text-white">{user?.username || 'Initiate'}</p>
+                <div className="flex items-center gap-1.5">
+                  <span className="block w-1.5 h-1.5 rounded-full bg-rivals-accent shadow-[0_0_5px_#8b5cf6]" />
+                  <p className="text-[9px] text-rivals-accent uppercase font-black tracking-widest leading-none">
+                    {user?.role || 'user'}
+                  </p>
+                </div>
               </div>
             </div>
             <button
               onClick={logout}
-              className="text-slate-600 hover:text-red-400 transition-colors p-1"
-              title="Logout"
+              className="text-slate-500 hover:text-hot hover:bg-hot/10 p-2 rounded-lg transition-all"
+              title="Terminate Session"
             >
-              <LogOut size={14} />
+              <LogOut size={18} />
             </button>
           </div>
         </div>
       </aside>
 
-      {/* Main Content */}
-      <main className="flex-1 ml-64 p-8 overflow-y-auto h-screen relative bg-[#020617]">
-        <div className="max-w-7xl mx-auto pb-20">
+      {/* Main Viewport */}
+      <main className="flex-1 ml-72 p-10 overflow-y-auto h-screen relative scroll-smooth">
+        <div className="max-w-7xl mx-auto pb-24 relative z-10 animate-in fade-in slide-in-from-bottom-5 duration-700">
           {children}
         </div>
 
-        {/* Decorative Background Elements */}
-        <div className="fixed top-0 left-64 right-0 h-64 bg-gradient-to-b from-rivals-accent/5 to-transparent pointer-events-none" />
-        <div className="fixed bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-rivals-accent/5 blur-[120px] rounded-full pointer-events-none" />
+        {/* Decorative elements */}
+        <div className="fixed top-0 left-72 right-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent pointer-events-none" />
+        <div className="fixed bottom-0 left-72 right-0 h-64 bg-gradient-to-t from-rivals-darker to-transparent pointer-events-none z-0" />
       </main>
     </div>
   );
 };
+
+export default Layout;
 
 export default Layout;
