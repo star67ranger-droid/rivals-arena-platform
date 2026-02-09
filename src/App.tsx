@@ -12,19 +12,34 @@ import Settings from './pages/Settings';
 import Admin from './pages/Admin';
 
 const ProtectedRoute = ({ children, requireAdmin = false }: { children: React.ReactNode, requireAdmin?: boolean }) => {
-  const { user, isAdmin } = useAuth();
+  const { user, isAdmin, isAuthenticated } = useAuth();
   const location = useLocation();
 
-  if (!user) {
+  console.log('[ProtectedRoute] User:', user?.username, 'Auth:', isAuthenticated, 'Admin:', isAdmin, 'Path:', location.pathname);
+
+  if (!isAuthenticated || !user) {
+    console.log('[ProtectedRoute] Not authenticated, redirecting to login');
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
   if (requireAdmin && !isAdmin) {
+    console.log('[ProtectedRoute] Admin required but user is not admin, redirecting to home');
     return <Navigate to="/" replace />;
   }
 
   return <>{children}</>;
 };
+
+// Global Error Catcher for Production Debugging
+if (typeof window !== 'undefined') {
+  window.onerror = function (message, source, lineno, colno, error) {
+    console.error('GLOBAL ERROR:', message, 'at', source, ':', lineno, ':', colno);
+    // Optionally alert for the user to see it
+    if (window.location.hostname !== 'localhost') {
+      // alert('Une erreur est survenue ! Regarde la console ou contacte le support. Error: ' + message);
+    }
+  };
+}
 
 const AppRoutes = () => {
   return (
