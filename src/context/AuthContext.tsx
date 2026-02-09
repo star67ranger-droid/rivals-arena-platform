@@ -27,9 +27,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     useEffect(() => {
         // Check local storage for session restoration
-        const savedSession = localStorage.getItem('rivals_arena_session');
-        if (savedSession) {
-            setUser(JSON.parse(savedSession));
+        try {
+            const savedSession = localStorage.getItem('rivals_arena_session');
+            if (savedSession && savedSession !== 'undefined') {
+                const parsed = JSON.parse(savedSession);
+                if (parsed && parsed.username) {
+                    setUser(parsed);
+                }
+            }
+        } catch (e) {
+            console.error('Failed to restore session', e);
+            localStorage.removeItem('rivals_arena_session');
         }
     }, []);
 

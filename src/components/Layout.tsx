@@ -70,7 +70,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           <div className="flex items-center justify-between gap-3 bg-slate-900 p-3 rounded-lg border border-slate-700/50">
             <div className="flex items-center gap-3 overflow-hidden">
               <div className="w-8 h-8 rounded bg-gradient-to-br from-slate-700 to-slate-600 flex items-center justify-center text-xs font-bold shrink-0">
-                {user?.username.substring(0, 2).toUpperCase() || 'GU'}
+                {user?.username ? user.username.substring(0, 2).toUpperCase() : 'GU'}
               </div>
               <div className="overflow-hidden">
                 <p className="text-sm font-semibold truncate">{user?.username || 'Guest'}</p>
