@@ -62,15 +62,22 @@ export const tournamentServiceSupabase = {
 
         if (error || !tournaments) return [];
 
-        // For list view, we might not need full details, but for now let's load basic info
-        // To avoid N+1, ideally we'd load details only on detail page, but sticking to existing interface
-        // We will return lightweight objects here and load full details in getById
         return tournaments.map(t => ({
-            ...t,
+            id: t.id,
+            name: t.name,
+            description: t.description,
+            game: t.game,
+            format: t.format as TournamentFormat,
+            teamSize: t.team_size as TeamSize,
+            maxTeams: t.max_teams,
+            status: t.status,
+            startDate: t.start_date,
+            prizePool: t.prize_pool,
+            winnerTeamId: t.winner_team_id,
             teams: [],
             matches: [],
             pendingPlayers: []
-        })) as any;
+        }));
     },
 
     getById: async (id: string): Promise<Tournament | null> => {
