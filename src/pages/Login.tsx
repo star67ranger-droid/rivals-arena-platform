@@ -11,7 +11,7 @@ const Login: React.FC = () => {
     const [inputValue, setInputValue] = useState('');
     const [error, setError] = useState('');
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError('');
 
@@ -27,7 +27,7 @@ const Login: React.FC = () => {
                 setError('Username must be at least 3 characters');
                 return;
             }
-            loginAsPlayer(inputValue.trim());
+            await loginAsPlayer(inputValue.trim());
             navigate('/');
         }
     };

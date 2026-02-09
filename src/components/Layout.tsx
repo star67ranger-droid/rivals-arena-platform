@@ -1,3 +1,4 @@
+import React from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Link, useLocation } from 'react-router-dom';
 import { Trophy, Swords, PlusCircle, LayoutDashboard, Settings, User, Shield, LogOut } from 'lucide-react';

@@ -14,7 +14,7 @@ interface User {
 interface AuthContextType {
     user: User | null;
     loginAsAdmin: (pin: string) => boolean;
-    loginAsPlayer: (username: string) => void;
+    loginAsPlayer: (username: string) => Promise<void>;
     logout: () => void;
     isAuthenticated: boolean;
     isAdmin: boolean;
