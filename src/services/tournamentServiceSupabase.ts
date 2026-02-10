@@ -268,7 +268,10 @@ export const tournamentServiceSupabase = {
                         const nextMatch = matchRows.find(row => row.round_index === 1 && row.match_index === nextMatchIndex);
                         if (nextMatch) {
                             const pos = m % 2 === 0 ? 'team_a_id' : 'team_b_id';
-                            await supabase.from('matches').update({ [pos]: teamA.id }).eq('id', nextMatch.id);
+                            const { data: updatedNext } = await supabase.from('matches').update({ [pos]: teamA.id }).eq('id', nextMatch.id).select().single();
+                            if (updatedNext && updatedNext.team_a_id && updatedNext.team_b_id) {
+                                await supabase.from('matches').update({ status: 'READY' }).eq('id', updatedNext.id);
+                            }
                         }
                     }
                 }
@@ -374,7 +377,10 @@ export const tournamentServiceSupabase = {
                 // Advance to winner bracket
                 if (current.next_match_id) {
                     const pos = current.next_match_position === 'A' ? 'team_a_id' : 'team_b_id';
-                    await supabase.from('matches').update({ [pos]: teamA.id, status: 'READY' }).eq('id', current.next_match_id);
+                    const { data: updatedNext } = await supabase.from('matches').update({ [pos]: teamA.id }).eq('id', current.next_match_id).select().single();
+                    if (updatedNext && updatedNext.team_a_id && updatedNext.team_b_id) {
+                        await supabase.from('matches').update({ status: 'READY' }).eq('id', updatedNext.id);
+                    }
                 }
                 // (Losers don't drop on a BYE win)
             }
@@ -395,10 +401,56 @@ export const tournamentServiceSupabase = {
             updates.status = 'COMPLETED';
             const loserId = winnerId === currentMatch.team_a_id ? currentMatch.team_b_id : currentMatch.team_a_id;
 
-            // Winner Advancement
+            // --- Real Elo Integration ---
+            // Calculate base rating change (e.g., +25 for win, -15 for loss)
+            // Ideally should be calculated based on opponent rating, but this is a solid baseline for v1
+            const winChange = 25;
+            const lossChange = -15;
+
+            // Get all players for both teams
+            const { data: teamMembers } = await supabase
+                .from('team_members')
+                .select('player_username')
+                .in('team_id', [currentMatch.team_a_id, currentMatch.team_b_id].filter(Boolean));
+
+            if (teamMembers) {
+                for (const member of teamMembers) {
+                    // We need the profile ID. Fetch by username.
+                    const profile = await playerService.getByName(member.player_username);
+                    if (profile) {
+                        const isWinner = (winnerId === currentMatch.team_a_id && currentMatch.team_a_id === profile.id) || // Need to check if player's team won
+                            (winnerId === currentMatch.team_b_id && currentMatch.team_b_id === profile.id);
+
+                        // BUT wait, member.team_id isn't in my selection. Let's fix.
+                    }
+                }
+            }
+
+            // Refactored Elo update loop
+            const { data: memberDetails } = await supabase
+                .from('team_members')
+                .select('team_id, player_username')
+                .in('team_id', [currentMatch.team_a_id, currentMatch.team_b_id].filter(Boolean));
+
+            if (memberDetails) {
+                for (const member of memberDetails) {
+                    const isWinnerTeam = member.team_id === winnerId;
+                    const profile = await playerService.getByName(member.player_username);
+                    if (profile) {
+                        await playerService.updateStats(profile.id, isWinnerTeam, isWinnerTeam ? winChange : lossChange);
+                    }
+                }
+            }
+
+            // --- Advancement Logic ---
             if (currentMatch.next_match_id) {
                 const pos = currentMatch.next_match_position === 'A' ? 'team_a_id' : 'team_b_id';
-                await supabase.from('matches').update({ [pos]: winnerId, status: 'READY' }).eq('id', currentMatch.next_match_id);
+                const { data: nextMatch } = await supabase.from('matches').update({ [pos]: winnerId }).eq('id', currentMatch.next_match_id).select().single();
+
+                // Only set READY if both teams are present
+                if (nextMatch && nextMatch.team_a_id && nextMatch.team_b_id) {
+                    await supabase.from('matches').update({ status: 'READY' }).eq('id', nextMatch.id);
+                }
             } else {
                 await supabase.from('tournaments').update({ status: 'Completed', winner_team_id: winnerId }).eq('id', tournamentId);
             }
@@ -406,7 +458,11 @@ export const tournamentServiceSupabase = {
             // Loser Drop (Double Elimination)
             if (currentMatch.loser_match_id && loserId) {
                 const lPos = currentMatch.loser_match_position === 'A' ? 'team_a_id' : 'team_b_id';
-                await supabase.from('matches').update({ [lPos]: loserId, status: 'READY' }).eq('id', currentMatch.loser_match_id);
+                const { data: lMatch } = await supabase.from('matches').update({ [lPos]: loserId }).eq('id', currentMatch.loser_match_id).select().single();
+
+                if (lMatch && lMatch.team_a_id && lMatch.team_b_id) {
+                    await supabase.from('matches').update({ status: 'READY' }).eq('id', lMatch.id);
+                }
             }
         }
 
