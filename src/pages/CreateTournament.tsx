@@ -2,7 +2,11 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { TournamentFormat, TeamSize } from '../types';
 import { tournamentService } from '../services/tournamentService';
-import { ChevronRight, Dna, Trophy, Calendar, AlertCircle, Loader2 } from 'lucide-react';
+import {
+  ChevronRight, Dna, Trophy, Calendar,
+  AlertCircle, Loader2, Sparkles,
+  Target, Zap, ShieldCheck
+} from 'lucide-react';
 import { useToast } from '../context/ToastContext';
 
 const CreateTournament: React.FC = () => {
@@ -10,6 +14,7 @@ const CreateTournament: React.FC = () => {
   const { showToast } = useToast();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -22,7 +27,7 @@ const CreateTournament: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.name.trim()) {
-      setError("Tournament name is required");
+      setError("Operation nomenclature required");
       return;
     }
 
@@ -30,55 +35,66 @@ const CreateTournament: React.FC = () => {
       setLoading(true);
       const newTournament = await tournamentService.create(formData);
       if (newTournament) {
-        showToast('Tournament created successfully!', 'success');
+        showToast('Operation successfully initialized', 'success');
         navigate(`/tournament/${newTournament.id}`);
       } else {
-        setError("Failed to create tournament");
+        setError("System failure during initialization");
       }
     } catch (e) {
-      setError("Failed to create tournament");
+      setError("Initialization sequence failed");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="max-w-3xl mx-auto pb-12">
-      <div className="mb-8">
-        <h2 className="text-3xl font-bold mb-2">Create Tournament</h2>
-        <p className="text-slate-400">Setup your Rivals Arena competition settings.</p>
+    <div className="max-w-4xl mx-auto pb-32 animate-in fade-in zoom-in-95 duration-700">
+      <div className="mb-12 relative">
+        <h2 className="text-6xl font-black text-white mb-2 tracking-tighter italic uppercase underline decoration-rivals-neon decoration-8 underline-offset-[10px]">
+          Launch <span className="text-rivals-accent">Event</span>
+        </h2>
+        <p className="text-slate-500 text-xl font-medium tracking-tight">Configure your global tournament parameters.</p>
+        <div className="absolute -top-10 -right-10 opacity-5 rotate-12">
+          <Trophy size={140} />
+        </div>
       </div>
 
       {error && (
-        <div className="mb-6 bg-red-500/10 border border-red-500/50 p-4 rounded-lg flex items-center gap-3 text-red-400">
-          <AlertCircle size={20} />
-          <span>{error}</span>
+        <div className="mb-8 p-6 glass bg-hot/10 border border-hot/30 rounded-3xl flex items-center gap-4 text-hot animate-bounce">
+          <AlertCircle size={28} />
+          <span className="font-black text-sm uppercase tracking-widest">{error}</span>
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Card 1: Basic Info */}
-        <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 shadow-xl">
-          <h3 className="text-lg font-bold mb-4 flex items-center gap-2 text-violet-400">
-            <Trophy size={18} /> Basic Information
+      <form onSubmit={handleSubmit} className="space-y-8">
+        {/* Module 1: Core Specs */}
+        <div className="glass-heavy border border-white/5 rounded-[2.5rem] p-10 relative overflow-hidden group">
+          <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
+            <Sparkles size={80} className="text-rivals-accent" />
+          </div>
+
+          <h3 className="text-xl font-black mb-10 flex items-center gap-3 text-white italic uppercase tracking-tighter">
+            <Trophy size={24} className="text-rivals-accent" /> Tactical Blueprint
           </h3>
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-slate-400 mb-1">Tournament Name <span className="text-red-500">*</span></label>
+
+          <div className="space-y-8">
+            <div className="relative">
+              <label className="block text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] mb-3">Operation Title</label>
               <input
                 type="text"
                 required
-                className="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-white focus:ring-2 focus:ring-violet-500 focus:border-transparent outline-none transition-all placeholder:text-slate-700"
-                placeholder="e.g. Summer Showdown 2024"
+                className="w-full glass bg-white/5 border border-white/10 rounded-2xl p-4 text-white font-bold text-lg focus:ring-4 focus:ring-rivals-accent/20 focus:border-rivals-accent outline-none transition-all placeholder:text-slate-700"
+                placeholder="e.g. PROJECT NEON STORM"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               />
             </div>
-            <div>
-              <label className="block text-sm font-medium text-slate-400 mb-1">Description</label>
+
+            <div className="relative">
+              <label className="block text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] mb-3">Mission Brief / Rules</label>
               <textarea
-                className="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-white focus:ring-2 focus:ring-violet-500 focus:border-transparent outline-none transition-all h-24 placeholder:text-slate-700 resize-none"
-                placeholder="Rules, requirements, and details..."
+                className="w-full glass bg-white/5 border border-white/10 rounded-2xl p-4 text-white font-medium focus:ring-4 focus:ring-rivals-accent/20 focus:border-rivals-accent outline-none transition-all h-32 placeholder:text-slate-700 resize-none"
+                placeholder="Define tournament rules and player expectations..."
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               />
@@ -86,58 +102,61 @@ const CreateTournament: React.FC = () => {
           </div>
         </div>
 
-        {/* Card 2: Format & Settings */}
-        <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 shadow-xl">
-          <h3 className="text-lg font-bold mb-4 flex items-center gap-2 text-cyan-400">
-            <Dna size={18} /> Format & Rules
+        {/* Module 2: Rules of Engagement */}
+        <div className="glass-heavy border border-white/5 rounded-[2.5rem] p-10 relative overflow-hidden group">
+          <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
+            <Dna size={80} className="text-rivals-neon" />
+          </div>
+
+          <h3 className="text-xl font-black mb-10 flex items-center gap-3 text-white italic uppercase tracking-tighter">
+            <Target size={24} className="text-rivals-neon" /> Format Parameters
           </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
             <div>
-              <label className="block text-sm font-medium text-slate-400 mb-1">Game Mode</label>
+              <label className="block text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] mb-3">Engagement Mode</label>
               <select
-                className="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-white focus:ring-2 focus:ring-cyan-500 outline-none cursor-pointer"
+                className="w-full glass bg-white/5 border border-white/10 rounded-2xl p-4 text-white font-bold focus:ring-4 focus:ring-rivals-neon/20 outline-none cursor-pointer appearance-none"
                 value={formData.teamSize}
                 onChange={(e) => setFormData({ ...formData, teamSize: e.target.value as TeamSize })}
               >
-                <option value={TeamSize.SOLO}>1v1 Duel</option>
-                <option value={TeamSize.DUO}>2v2 Wingman</option>
-                <option value={TeamSize.SQUAD}>5v5 Team Battle</option>
+                <option value={TeamSize.SOLO}>1v1 Combat</option>
+                <option value={TeamSize.DUO}>2v2 Tactical</option>
+                <option value={TeamSize.SQUAD}>5v5 Squad Raid</option>
               </select>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-400 mb-1">Format</label>
+              <label className="block text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] mb-3">Tournament Logic</label>
               <select
-                className="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-white focus:ring-2 focus:ring-cyan-500 outline-none cursor-pointer"
+                className="w-full glass bg-white/5 border border-white/10 rounded-2xl p-4 text-white font-bold focus:ring-4 focus:ring-rivals-neon/20 outline-none cursor-pointer appearance-none"
                 value={formData.format}
                 onChange={(e) => setFormData({ ...formData, format: e.target.value as TournamentFormat })}
               >
-                <option value={TournamentFormat.SINGLE_ELIMINATION}>Single Elimination</option>
-                <option value={TournamentFormat.DOUBLE_ELIMINATION} disabled>Double Elimination (Pro Only)</option>
+                <option value={TournamentFormat.SINGLE_ELIMINATION}>Single Elimination (Sudden)</option>
+                <option value={TournamentFormat.DOUBLE_ELIMINATION}>Double Elimination (Gritty)</option>
               </select>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-400 mb-1">Max Teams</label>
+              <label className="block text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] mb-3">Combatant Capacity</label>
               <select
-                className="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-white focus:ring-2 focus:ring-cyan-500 outline-none cursor-pointer"
+                className="w-full glass bg-white/5 border border-white/10 rounded-2xl p-4 text-white font-bold focus:ring-4 focus:ring-rivals-neon/20 outline-none cursor-pointer appearance-none"
                 value={formData.maxTeams}
                 onChange={(e) => setFormData({ ...formData, maxTeams: Number(e.target.value) })}
               >
-                <option value={4}>4 Teams</option>
-                <option value={8}>8 Teams</option>
-                <option value={16}>16 Teams</option>
-                <option value={32}>32 Teams</option>
-                <option value={64}>64 Teams</option>
+                {[4, 8, 16, 32, 64].map(size => (
+                  <option key={size} value={size}>{size} Deployment Slots</option>
+                ))}
               </select>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-400 mb-1">Prize Pool</label>
+              <label className="block text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] mb-3">Prize Bounty</label>
               <input
                 type="text"
-                className="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-white focus:ring-2 focus:ring-cyan-500 outline-none placeholder:text-slate-700"
-                placeholder="e.g. 1000 Robux"
+                className="w-full glass bg-white/5 border border-white/10 rounded-2xl p-4 text-rivals-neon font-black text-lg focus:ring-4 focus:ring-rivals-neon/20 outline-none placeholder:text-slate-700 shadow-[inset_0_0_20px_rgba(34,211,238,0.05)]"
+                placeholder="e.g. 100,000 Credits"
                 value={formData.prizePool}
                 onChange={(e) => setFormData({ ...formData, prizePool: e.target.value })}
               />
@@ -145,14 +164,19 @@ const CreateTournament: React.FC = () => {
           </div>
         </div>
 
-        <div className="flex justify-end pt-4">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-6 pt-10">
+          <div className="flex items-center gap-4 text-slate-500">
+            <ShieldCheck size={24} className="text-emerald-500" />
+            <p className="text-xs font-bold uppercase tracking-widest leading-tight">Server-side verification <br /> will be active for this mission.</p>
+          </div>
+
           <button
             type="submit"
             disabled={loading}
-            className="bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white font-bold py-3 px-8 rounded-lg shadow-lg shadow-violet-900/20 transform hover:-translate-y-0.5 transition-all flex items-center gap-2 disabled:opacity-50"
+            className="w-full md:w-auto px-12 py-6 bg-white text-rivals-darker hover:bg-rivals-neon hover:text-white rounded-[2rem] font-black text-lg shadow-[0_0_50px_rgba(255,255,255,0.1)] hover:shadow-rivals-neon/30 transition-all duration-500 transform hover:-translate-y-2 active:scale-95 flex items-center justify-center gap-4 disabled:opacity-50 group"
           >
-            {loading ? <Loader2 className="animate-spin" size={18} /> : null}
-            {loading ? 'Launching...' : 'Launch Tournament'} <ChevronRight size={18} />
+            {loading ? <Loader2 className="animate-spin" size={24} /> : <Zap size={24} className="group-hover:fill-current" />}
+            {loading ? 'INITIALIZING...' : 'INITIALIZE OPERATION'} <ChevronRight size={24} className="group-hover:translate-x-2 transition-transform" />
           </button>
         </div>
       </form>

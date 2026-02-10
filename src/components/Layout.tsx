@@ -28,7 +28,18 @@ const NavItem = ({ to, icon: Icon, label, pathname }: { to: string; icon: any; l
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   const location = useLocation();
-  const { user, isAdmin, logout } = useAuth();
+  const { user, isAdmin, logout, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-rivals-darker flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-16 h-16 border-4 border-rivals-accent border-t-transparent rounded-full animate-spin" />
+          <p className="text-slate-500 font-black uppercase tracking-[0.3em] text-[10px] animate-pulse">Syncing Neural Link</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-screen bg-rivals-darker text-slate-100 font-sans selection:bg-rivals-accent/40 overflow-hidden relative">
@@ -121,7 +132,5 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     </div>
   );
 };
-
-export default Layout;
 
 export default Layout;

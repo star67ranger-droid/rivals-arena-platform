@@ -1,0 +1,100 @@
+@import "tailwindcss";
+
+@theme {
+    --font-sans: "Outfit", ui-sans-serif, system-ui, sans-serif;
+    --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+    --color-rivals-darker: #020617;
+    --color-rivals-dark: #0f172a;
+    --color-rivals-card: #1e293b;
+    --color-rivals-accent: #8b5cf6;
+    --color-rivals-neon: #22d3ee;
+    --color-rivals-hot: #f43f5e;
+    --color-rivals-surface: rgba(30, 41, 59, 0.5);
+
+    --background-image-grid-pattern: url("https://www.transparenttextures.com/patterns/dark-matter.png");
+
+    --animate-glow-pulse: glow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    --animate-float: float 6s ease-in-out infinite;
+
+    @keyframes glow {
+
+        0%,
+        100% {
+            opacity: 1;
+        }
+
+        50% {
+            opacity: 0.5;
+        }
+    }
+
+    @keyframes float {
+
+        0%,
+        100% {
+            transform: translateY(0px);
+        }
+
+        50% {
+            transform: translateY(-10px);
+        }
+    }
+}
+
+:root {
+    --rivals-accent: 139, 92, 246;
+    --rivals-neon: 34, 211, 238;
+}
+
+body {
+    @apply bg-rivals-darker text-slate-50 overflow-x-hidden;
+}
+
+/* Glassmorphism Utilities */
+.glass {
+    background: rgba(15, 23, 42, 0.6) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+.glass-heavy {
+    background: rgba(2, 6, 23, 0.8) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Neon Glows */
+.neon-border {
+    box-shadow: 0 0 15px rgba(var(--rivals-accent), 0.3);
+}
+
+.neon-text {
+    text-shadow: 0 0 10px rgba(var(--rivals-neon), 0.5);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    @apply bg-rivals-darker;
+}
+
+::-webkit-scrollbar-thumb {
+    @apply bg-rivals-card rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    @apply bg-rivals-accent;
+}
+
+/* Selection */
+::selection {
+    background: rgba(139, 92, 246, 0.4);
+    color: white;
+}

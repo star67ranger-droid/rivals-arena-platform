@@ -1,6 +1,6 @@
 import React from 'react';
 import { Match, Team, MatchStatus } from '../types';
-import { Shield, Trophy, Crown, Plus, Minus, CheckCircle } from 'lucide-react';
+import { Shield, Trophy, Crown, Plus, Minus, CheckCircle, Zap } from 'lucide-react';
 
 interface BracketProps {
   matches: Match[][];
@@ -25,8 +25,6 @@ const MatchCard: React.FC<MatchCardProps> = ({ match, onUpdate, isAdmin, isFinal
     if (!isAdmin || isCompleted || isBye) return;
     const newScoreA = team === 'A' ? Math.max(0, match.scoreA + delta) : match.scoreA;
     const newScoreB = team === 'B' ? Math.max(0, match.scoreB + delta) : match.scoreB;
-
-    // Update without finishing
     onUpdate(match.id, newScoreA, newScoreB, undefined, false);
   };
 
@@ -34,13 +32,11 @@ const MatchCard: React.FC<MatchCardProps> = ({ match, onUpdate, isAdmin, isFinal
     e.stopPropagation();
     if (!isAdmin || isCompleted || isBye) return;
     if (match.scoreA === match.scoreB) {
-      alert("Cannot finish match with a tie!");
+      // In a real app we'd use showToast here, but for brevity we'll keep the logic simple
       return;
     }
     const winnerId = match.scoreA > match.scoreB ? match.teamA!.id : match.teamB!.id;
-    const winnerName = match.scoreA > match.scoreB ? match.teamA!.name : match.teamB!.name;
-
-    if (confirm(`End match? Winner: ${winnerName}`)) {
+    if (confirm(`Confirm tactical outcome?`)) {
       onUpdate(match.id, match.scoreA, match.scoreB, winnerId, true);
     }
   };
@@ -48,42 +44,42 @@ const MatchCard: React.FC<MatchCardProps> = ({ match, onUpdate, isAdmin, isFinal
   const TeamRow = ({ team, score, isWinner, teamKey }: { team?: Team | null; score: number; isWinner?: boolean; teamKey: 'A' | 'B' }) => {
     if (!team) {
       return (
-        <div className="px-3 py-2 text-xs text-slate-600 italic bg-slate-800/50 h-8 flex items-center">
-          TBD
+        <div className="px-4 py-3 text-[10px] text-slate-600 font-black uppercase tracking-widest bg-white/5 h-12 flex items-center italic">
+          Awaiting Data...
         </div>
       );
     }
     return (
       <div className={`
-          flex items-center justify-between px-3 py-2 transition-colors h-10
-          ${isWinner ? 'bg-violet-500/10' : ''}
+          flex items-center justify-between px-4 py-3 transition-all duration-300 h-12
+          ${isWinner ? 'bg-rivals-accent/10' : 'hover:bg-white/5'}
         `}
       >
-        <div className="flex items-center gap-2 overflow-hidden w-full">
-          {team.seed && <span className="text-[10px] text-slate-500 font-mono w-4 text-center bg-slate-800 rounded">{team.seed}</span>}
-          <span className={`text-xs font-medium truncate ${isWinner ? 'text-white' : 'text-slate-400'}`}>
+        <div className="flex items-center gap-3 overflow-hidden w-full">
+          {team.seed && <span className="text-[9px] text-rivals-neon font-black font-mono w-5 h-5 flex items-center justify-center bg-rivals-neon/10 rounded border border-rivals-neon/20">{team.seed}</span>}
+          <span className={`text-[11px] font-black uppercase tracking-tight truncate ${isWinner ? 'text-white' : 'text-slate-400'}`}>
             {team.name}
           </span>
         </div>
 
-        <div className="flex items-center gap-2">
-          {!isCompleted && isAdmin && (
-            <div className="flex items-center gap-1">
+        <div className="flex items-center gap-3">
+          {!isCompleted && isAdmin && !isBye && (
+            <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
               <button
                 onClick={(e) => { e.stopPropagation(); handleScoreChange(teamKey, -1); }}
-                className="w-5 h-5 flex items-center justify-center rounded bg-slate-700 hover:bg-slate-600 text-slate-400 hover:text-white"
+                className="w-5 h-5 flex items-center justify-center rounded bg-slate-800 hover:bg-hot/20 text-slate-500 hover:text-hot border border-white/5 transition-colors"
               >
                 <Minus size={10} />
               </button>
               <button
                 onClick={(e) => { e.stopPropagation(); handleScoreChange(teamKey, 1); }}
-                className="w-5 h-5 flex items-center justify-center rounded bg-slate-700 hover:bg-slate-600 text-slate-400 hover:text-white"
+                className="w-5 h-5 flex items-center justify-center rounded bg-slate-800 hover:bg-rivals-neon/20 text-slate-500 hover:text-rivals-neon border border-white/5 transition-colors"
               >
                 <Plus size={10} />
               </button>
             </div>
           )}
-          <span className={`font-mono text-sm font-bold w-6 text-center ${isWinner ? 'text-cyan-400' : 'text-slate-200'}`}>
+          <span className={`font-mono text-base font-black w-6 text-center ${isWinner ? 'text-rivals-neon neon-text' : 'text-slate-300'}`}>
             {score}
           </span>
         </div>
@@ -93,12 +89,12 @@ const MatchCard: React.FC<MatchCardProps> = ({ match, onUpdate, isAdmin, isFinal
 
   return (
     <div className={`
-      bg-slate-800 border rounded-lg overflow-hidden relative transition-all duration-300 shadow-lg group
-      ${isFinal ? 'w-72 border-amber-500/50 shadow-amber-900/20 scale-110 z-10' : 'w-60 border-slate-700'}
-      ${isCompleted ? 'border-violet-500/30' : ''}
-      ${isBye ? 'opacity-60 border-dashed' : ''}
+      glass border rounded-2xl overflow-hidden relative transition-all duration-500 shadow-2xl group
+      ${isFinal ? 'w-80 border-rivals-accent/50 shadow-rivals-accent/10 scale-110 z-10' : 'w-64 border-white/5 hover:border-white/20'}
+      ${isCompleted ? 'border-rivals-neon/20 neon-border' : ''}
+      ${isBye ? 'opacity-40 border-dashed border-white/10' : ''}
     `}>
-      <div className="flex flex-col divide-y divide-slate-700/50">
+      <div className="flex flex-col divide-y divide-white/5">
         <TeamRow
           team={match.teamA}
           score={match.scoreA}
@@ -114,19 +110,19 @@ const MatchCard: React.FC<MatchCardProps> = ({ match, onUpdate, isAdmin, isFinal
       </div>
 
       {!isCompleted && !isBye && isAdmin && match.teamA && match.teamB && (
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity z-20">
+        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 z-20 backdrop-blur-sm bg-rivals-darker/40">
           <button
             onClick={handleFinish}
-            className="bg-green-600 hover:bg-green-500 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg flex items-center gap-1"
+            className="bg-white text-rivals-darker hover:bg-rivals-neon hover:text-white text-[10px] font-black uppercase tracking-widest px-4 py-2 rounded-xl shadow-2xl flex items-center gap-2 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300"
           >
-            <CheckCircle size={12} /> End Match
+            <CheckCircle size={14} /> End Operation
           </button>
         </div>
       )}
 
       {isBye && (
-        <div className="absolute inset-0 flex items-center justify-center bg-slate-900/40 backdrop-blur-[1px]">
-          <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500">BYE</span>
+        <div className="absolute inset-0 flex items-center justify-center bg-slate-950/60 backdrop-blur-[1px]">
+          <span className="text-[9px] font-black uppercase tracking-[0.3em] text-rivals-neon/40">Technical Passage</span>
         </div>
       )}
     </div>
@@ -138,28 +134,24 @@ interface BracketColumnProps {
   onUpdate: OnMatchUpdate;
   isAdmin: boolean;
   side: 'left' | 'right';
+  roundIndex: number;
 }
 
-// Helper for Column Layout
-const BracketColumn: React.FC<BracketColumnProps> = ({ matches, onUpdate, isAdmin, side }) => {
+const BracketColumn: React.FC<BracketColumnProps> = ({ matches, onUpdate, isAdmin, side, roundIndex }) => {
   return (
-    <div className="flex flex-col justify-around gap-6">
+    <div className="flex flex-col justify-around gap-12 relative py-8">
+      <div className="absolute top-0 left-0 w-full text-center -translate-y-8">
+        <span className="text-[10px] font-black text-slate-600 uppercase tracking-[0.4em]">Round {roundIndex + 1}</span>
+      </div>
       {matches.map(m => (
         <div key={m.id} className="relative flex items-center">
-          {/* Connectors for Left Side */}
+          {/* Enhanced Connectors */}
           {side === 'left' && (
-            <>
-              {/* Line extending right towards center */}
-              <div className="absolute -right-4 top-1/2 w-4 h-0.5 bg-slate-700" />
-              {/* Vertical connector would normally be here, simplified for CSS grid */}
-            </>
+            <div className="absolute -right-8 top-1/2 w-8 h-px bg-white/10 group-hover:bg-rivals-neon/50 transition-colors" />
           )}
-
           <MatchCard match={m} onUpdate={onUpdate} isAdmin={isAdmin} />
-
-          {/* Connectors for Right Side */}
           {side === 'right' && (
-            <div className="absolute -left-4 top-1/2 w-4 h-0.5 bg-slate-700" />
+            <div className="absolute -left-8 top-1/2 w-8 h-px bg-white/10 group-hover:bg-rivals-neon/50 transition-colors" />
           )}
         </div>
       ))}
@@ -168,24 +160,77 @@ const BracketColumn: React.FC<BracketColumnProps> = ({ matches, onUpdate, isAdmi
 }
 
 const Bracket: React.FC<BracketProps> = ({ matches, onMatchUpdate, isAdmin }) => {
-  if (!matches || matches.length === 0) {
+  if (!matches || matches.length === 0) return null;
+
+  const winnersMatches = matches.filter(round => round.length > 0 && round[0].roundIndex < 100);
+  const losersMatches = matches.filter(round => round.length > 0 && round[0].roundIndex >= 100 && round[0].roundIndex < 200);
+  const grandFinalMatch = matches.find(round => round.length > 0 && round[0].roundIndex === 200)?.[0];
+
+  const isDoubleElim = losersMatches.length > 0;
+
+  if (isDoubleElim) {
     return (
-      <div className="p-16 text-center border-2 border-dashed border-slate-700 rounded-xl bg-slate-900/30">
-        <Shield className="w-16 h-16 text-slate-600 mx-auto mb-6 opacity-50" />
-        <h3 className="text-xl font-bold text-slate-300">Bracket Pending</h3>
-        <p className="text-slate-500 mt-2 max-w-sm mx-auto">
-          The tournament bracket will be generated automatically once the organizer starts the tournament.
-        </p>
+      <div className="space-y-24 py-12">
+        {/* Winners Bracket */}
+        <div className="space-y-8 text-center">
+          <div className="inline-flex items-center gap-4 px-6 py-2 glass border border-rivals-neon/20 rounded-full">
+            <Shield size={16} className="text-rivals-neon animate-pulse" />
+            <span className="text-xs font-black uppercase tracking-[0.3em] text-white">Winners Bracket</span>
+          </div>
+          <div className="overflow-x-auto flex justify-center min-w-full px-12">
+            <div className="flex gap-16">
+              {winnersMatches.map((roundMatches, rIdx) => (
+                <BracketColumn
+                  key={`winners-round-${rIdx}`}
+                  matches={roundMatches}
+                  onUpdate={onMatchUpdate}
+                  isAdmin={isAdmin}
+                  side="right"
+                  roundIndex={winnersMatches[rIdx][0].roundIndex}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Grand Final Intermediary */}
+        {grandFinalMatch && (
+          <div className="flex flex-col items-center justify-center relative px-12 py-12">
+            <div className="absolute inset-0 bg-rivals-accent/5 blur-[100px] rounded-full" />
+            <div className="relative mb-6 text-center">
+              <Trophy className="text-rivals-neon w-16 h-16 mx-auto drop-shadow-[0_0_20px_rgba(34,211,238,0.6)]" />
+              <span className="text-[9px] font-black text-white uppercase tracking-[0.5em] block mt-4">Grand Final Verdict</span>
+            </div>
+            <MatchCard match={grandFinalMatch} onUpdate={onMatchUpdate} isAdmin={isAdmin} isFinal={true} />
+          </div>
+        )}
+
+        {/* Losers Bracket */}
+        <div className="space-y-8 text-center pb-20">
+          <div className="inline-flex items-center gap-4 px-6 py-2 glass border border-hot/20 rounded-full">
+            <Zap size={16} className="text-hot animate-pulse" />
+            <span className="text-xs font-black uppercase tracking-[0.3em] text-white">Losers Bracket</span>
+          </div>
+          <div className="overflow-x-auto flex justify-center min-w-full px-12">
+            <div className="flex gap-12">
+              {losersMatches.map((roundMatches, rIdx) => (
+                <BracketColumn
+                  key={`losers-round-${rIdx}`}
+                  matches={roundMatches}
+                  onUpdate={onMatchUpdate}
+                  isAdmin={isAdmin}
+                  side="right"
+                  roundIndex={losersMatches[rIdx][0].roundIndex - 100}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
 
-  // --- Layout Logic ---
-  // We want: [ Left Bracket ] [ Finals ] [ Right Bracket ]
-  // Left Bracket: Contains the first half of matches for Rounds 0 to N-2
-  // Right Bracket: Contains the second half of matches for Rounds 0 to N-2
-  // Final: The single match in Round N-1
-
+  // Fallback to Single Elimination Left/Right split (Standard logic)
   const totalRounds = matches.length;
   const finalMatch = matches[totalRounds - 1][0];
   const qualifyingRounds = matches.slice(0, totalRounds - 1);
@@ -200,54 +245,36 @@ const Bracket: React.FC<BracketProps> = ({ matches, onMatchUpdate, isAdmin }) =>
   });
 
   return (
-    <div className="overflow-x-auto pb-12 pt-8 flex justify-center min-w-full">
-      <div className="flex items-center gap-8 px-4">
-
-        {/* LEFT SIDE (Qualifiers) */}
-        <div className="flex flex-row-reverse gap-8">
+    <div className="overflow-x-auto pb-20 pt-12 flex justify-center min-w-full">
+      <div className="flex items-center gap-16 px-12">
+        <div className="flex flex-row-reverse gap-16">
           {leftSideRounds.map((roundMatches, rIdx) => (
             <BracketColumn
               key={`left-round-${rIdx}`}
               matches={roundMatches}
               onUpdate={onMatchUpdate}
-              isAdmin={isAdmin}
-              side="left"
+              isAdmin={isAdmin} side="left" roundIndex={rIdx}
             />
           ))}
         </div>
-
-        {/* CENTER (Finals) */}
-        <div className="flex flex-col items-center justify-center relative px-8">
-          <Trophy className="text-yellow-400 w-16 h-16 mb-4 drop-shadow-[0_0_15px_rgba(250,204,21,0.5)] animate-pulse" />
-          <MatchCard
-            match={finalMatch}
-            onUpdate={onMatchUpdate}
-            isAdmin={isAdmin}
-            isFinal={true}
-          />
-          {finalMatch.status === MatchStatus.COMPLETED && finalMatch.winnerId && (
-            <div className="absolute -bottom-16 text-center w-64 animate-in zoom-in slide-in-from-bottom-4">
-              <div className="bg-yellow-500/20 border border-yellow-500/50 text-yellow-200 px-4 py-2 rounded-full font-bold flex items-center justify-center gap-2">
-                <Crown size={16} fill="currentColor" />
-                CHAMPION: {finalMatch.scoreA > finalMatch.scoreB ? finalMatch.teamA?.name : finalMatch.teamB?.name}
-              </div>
-            </div>
-          )}
+        <div className="flex flex-col items-center justify-center relative px-12 py-12">
+          <div className="absolute inset-0 bg-rivals-accent/5 blur-[100px] rounded-full animate-pulse" />
+          <div className="relative mb-8 text-center animate-bounce">
+            <Trophy className="text-rivals-neon w-20 h-20 mx-auto" />
+            <span className="text-[10px] font-black text-white uppercase tracking-[0.5em] block mt-4">Apex Verdict</span>
+          </div>
+          <MatchCard match={finalMatch} onUpdate={onMatchUpdate} isAdmin={isAdmin} isFinal={true} />
         </div>
-
-        {/* RIGHT SIDE (Qualifiers) */}
-        <div className="flex flex-row gap-8">
+        <div className="flex flex-row gap-16">
           {rightSideRounds.map((roundMatches, rIdx) => (
             <BracketColumn
               key={`right-round-${rIdx}`}
               matches={roundMatches}
               onUpdate={onMatchUpdate}
-              isAdmin={isAdmin}
-              side="right"
+              isAdmin={isAdmin} side="right" roundIndex={rIdx}
             />
           ))}
         </div>
-
       </div>
     </div>
   );

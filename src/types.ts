@@ -26,6 +26,13 @@ export interface Player {
   avatarUrl?: string;
 }
 
+export interface Achievement {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+}
+
 export interface UserProfile extends Player {
   bio?: string;
   wins: number;
@@ -33,7 +40,7 @@ export interface UserProfile extends Player {
   tournamentsPlayed: number;
   rating: number; // Elo or Points
   rank: string; // e.g. "Bronze", "Silver", "Gold", "Champion"
-  achievements: string[];
+  achievements: string[]; // List of IDs
   socials?: {
     discord?: string;
     twitter?: string;
@@ -60,6 +67,8 @@ export interface Match {
   status: MatchStatus;
   nextMatchId?: string; // ID of the match the winner advances to
   nextMatchPosition?: 'A' | 'B'; // Position in the next match
+  loserMatchId?: string; // ID of the match the loser drops into (Double Elimination)
+  loserMatchPosition?: 'A' | 'B'; // Position in the loser match
 }
 
 export interface Tournament {

@@ -1,137 +1,175 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { Shield, User, ArrowRight, Swords } from 'lucide-react';
+import { Shield, User, ArrowRight, Swords, Zap, Lock, Globe, Terminal, Mail, Info } from 'lucide-react';
+import { useToast } from '../context/ToastContext';
 
 const Login: React.FC = () => {
-    const { loginAsAdmin, loginAsPlayer } = useAuth();
+    const { signIn, signUp } = useAuth();
     const navigate = useNavigate();
+    const { showToast } = useToast();
 
-    const [mode, setMode] = useState<'select' | 'admin' | 'player'>('select');
-    const [inputValue, setInputValue] = useState('');
-    const [error, setError] = useState('');
+    const [isSignUp, setIsSignUp] = useState(false);
+    const [loading, setLoading] = useState(false);
+
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [username, setUsername] = useState('');
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setError('');
+        setLoading(true);
 
-        if (mode === 'admin') {
-            const success = loginAsAdmin(inputValue);
-            if (success) {
-                navigate('/');
+        try {
+            if (isSignUp) {
+                if (!username) {
+                    showToast('Username is required for enlistment', 'error');
+                    setLoading(false);
+                    return;
+                }
+                const { error } = await signUp(email, password, username);
+                if (error) {
+                    showToast(error.message, 'error');
+                } else {
+                    showToast('Enlistment successful! You can now sign in.', 'success');
+                    setIsSignUp(false);
+                }
             } else {
-                setError('Invalid Admin PIN');
+                const { error } = await signIn(email, password);
+                if (error) {
+                    showToast('Access Denied: Invalid credentials', 'error');
+                } else {
+                    showToast('Welcome back, Commander', 'success');
+                    navigate('/');
+                }
             }
-        } else {
-            if (inputValue.trim().length < 3) {
-                setError('Username must be at least 3 characters');
-                return;
-            }
-            await loginAsPlayer(inputValue.trim());
-            navigate('/');
+        } catch (err) {
+            showToast('Neural link failed. Try again.', 'error');
+        } finally {
+            setLoading(false);
         }
     };
 
     return (
-        <div className="min-h-screen bg-[#020617] flex items-center justify-center p-4">
+        <div className="min-h-screen bg-rivals-darker flex items-center justify-center p-6 relative overflow-hidden font-sans">
 
-            {/* Background Decor */}
-            <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
-                <div className="absolute top-[-10%] right-[-5%] w-96 h-96 bg-violet-600/10 blur-[100px] rounded-full" />
-                <div className="absolute bottom-[-10%] left-[-5%] w-96 h-96 bg-cyan-600/10 blur-[100px] rounded-full" />
-            </div>
+            {/* Cinematic Background */}
+            <div className="absolute inset-0 bg-grid-pattern opacity-10 mix-blend-overlay pointer-events-none" />
+            <div className="absolute top-[-20%] left-[-10%] w-[80%] h-[80%] bg-rivals-accent/10 blur-[150px] rounded-full animate-float pointer-events-none" />
+            <div className="absolute bottom-[-20%] right-[-10%] w-[80%] h-[80%] bg-rivals-neon/5 blur-[150px] rounded-full animate-float pointer-events-none" style={{ animationDelay: '2s' }} />
 
-            <div className="w-full max-w-md bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl p-8 relative z-10 animate-in zoom-in-95 duration-300">
-
-                <div className="text-center mb-8">
-                    <div className="w-16 h-16 bg-gradient-to-br from-rivals-accent to-cyan-500 rounded-xl flex items-center justify-center shadow-lg shadow-violet-900/20 mx-auto mb-4">
-                        <Swords size={32} className="text-white" />
+            <div className="w-full max-w-xl relative z-10 animate-in fade-in zoom-in-95 duration-1000">
+                <div className="text-center mb-12">
+                    <div className="relative inline-block group mb-8">
+                        <div className="w-20 h-20 bg-gradient-to-br from-rivals-accent to-rivals-neon rounded-[2rem] flex items-center justify-center shadow-[0_0_50px_rgba(139,92,246,0.3)] rotate-3 group-hover:rotate-12 transition-transform duration-700 relative z-20">
+                            <Swords size={40} className="text-white" />
+                        </div>
+                        <div className="absolute -inset-4 bg-rivals-accent/20 blur-2xl rounded-full animate-pulse z-10" />
                     </div>
-                    <h1 className="text-2xl font-bold text-white tracking-tight">Welcome to Rivals Arena</h1>
-                    <p className="text-slate-500 text-sm">Tournament Management System</p>
+
+                    <h1 className="text-5xl font-black text-white tracking-tighter italic uppercase mb-2">
+                        Rivals<span className="text-rivals-neon">Arena</span>
+                    </h1>
+                    <p className="text-[10px] text-slate-500 font-black tracking-[0.5em] uppercase">Tactical Deployment Portal</p>
                 </div>
 
-                {mode === 'select' && (
-                    <div className="space-y-4">
-                        <button
-                            onClick={() => setMode('player')}
-                            className="w-full bg-slate-800 hover:bg-slate-700 border border-slate-700 hover:border-cyan-500/50 p-4 rounded-xl flex items-center justify-between group transition-all"
-                        >
-                            <div className="flex items-center gap-4">
-                                <div className="w-10 h-10 bg-cyan-500/10 rounded-full flex items-center justify-center text-cyan-400 group-hover:bg-cyan-500 group-hover:text-white transition-colors">
-                                    <User size={20} />
-                                </div>
-                                <div className="text-left">
-                                    <p className="font-bold text-white group-hover:text-cyan-400">Player Access</p>
-                                    <p className="text-xs text-slate-500">Join tournaments & view stats</p>
-                                </div>
-                            </div>
-                            <ArrowRight size={18} className="text-slate-600 group-hover:text-cyan-400 group-hover:translate-x-1 transition-all" />
-                        </button>
+                <div className="glass-heavy border border-white/5 rounded-[3.5rem] p-10 md:p-12 relative overflow-hidden shadow-2xl">
+                    <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-rivals-neon/50 to-transparent" />
 
-                        <button
-                            onClick={() => setMode('admin')}
-                            className="w-full bg-slate-800 hover:bg-slate-700 border border-slate-700 hover:border-red-500/50 p-4 rounded-xl flex items-center justify-between group transition-all"
-                        >
-                            <div className="flex items-center gap-4">
-                                <div className="w-10 h-10 bg-red-500/10 rounded-full flex items-center justify-center text-red-400 group-hover:bg-red-500 group-hover:text-white transition-colors">
-                                    <Shield size={20} />
-                                </div>
-                                <div className="text-left">
-                                    <p className="font-bold text-white group-hover:text-red-400">Admin Access</p>
-                                    <p className="text-xs text-slate-500">Manage system & events</p>
-                                </div>
-                            </div>
-                            <ArrowRight size={18} className="text-slate-600 group-hover:text-red-400 group-hover:translate-x-1 transition-all" />
-                        </button>
-                    </div>
-                )}
-
-                {mode !== 'select' && (
-                    <form onSubmit={handleSubmit} className="animate-in slide-in-from-right-4">
-                        <div className="mb-6">
-                            <label className="block text-sm font-medium text-slate-400 mb-2">
-                                {mode === 'admin' ? 'Security PIN' : 'Roblox Username'}
-                            </label>
-                            <input
-                                type={mode === 'admin' ? 'password' : 'text'}
-                                autoFocus
-                                className="w-full bg-slate-950 border border-slate-700 rounded-lg p-3 text-white focus:ring-2 focus:ring-violet-500 outline-none transition-all placeholder:text-slate-700"
-                                placeholder={mode === 'admin' ? '••••' : 'e.g. xSlayer_99'}
-                                value={inputValue}
-                                onChange={e => setInputValue(e.target.value)}
-                                maxLength={mode === 'admin' ? 4 : 20}
-                            />
-                            {error && <p className="text-red-400 text-sm mt-2 flex items-center gap-1"><Shield size={12} /> {error}</p>}
-                        </div>
-
-                        <div className="flex gap-3">
+                    <form onSubmit={handleSubmit} className="space-y-6">
+                        <div className="flex bg-white/5 p-1 rounded-2xl mb-8 border border-white/5">
                             <button
                                 type="button"
-                                onClick={() => { setMode('select'); setInputValue(''); setError(''); }}
-                                className="px-4 py-3 rounded-lg text-slate-400 hover:text-white transition-colors"
+                                onClick={() => setIsSignUp(false)}
+                                className={`flex-1 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${!isSignUp ? 'bg-rivals-accent text-white shadow-lg' : 'text-slate-500 hover:text-slate-300'}`}
                             >
-                                Back
+                                Sign In
                             </button>
                             <button
-                                type="submit"
-                                className={`flex-1 font-bold py-3 rounded-lg transition-all shadow-lg text-white
-                            ${mode === 'admin'
-                                        ? 'bg-red-600 hover:bg-red-500 shadow-red-900/20'
-                                        : 'bg-cyan-600 hover:bg-cyan-500 shadow-cyan-900/20'
-                                    }`}
+                                type="button"
+                                onClick={() => setIsSignUp(true)}
+                                className={`flex-1 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${isSignUp ? 'bg-rivals-accent text-white shadow-lg' : 'text-slate-500 hover:text-slate-300'}`}
                             >
-                                {mode === 'admin' ? 'Unlock Dashboard' : 'Enter Arena'}
+                                Enlist
                             </button>
                         </div>
+
+                        <div className="space-y-4">
+                            {isSignUp && (
+                                <div className="relative">
+                                    <div className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-500">
+                                        <User size={18} />
+                                    </div>
+                                    <input
+                                        type="text"
+                                        required
+                                        className="w-full glass bg-white/5 border border-white/10 rounded-2xl p-5 pl-14 text-white font-bold text-sm focus:ring-4 focus:ring-rivals-accent/20 focus:border-rivals-accent outline-none transition-all placeholder:text-slate-700"
+                                        placeholder="Tactical Callsign (Username)"
+                                        value={username}
+                                        onChange={e => setUsername(e.target.value)}
+                                    />
+                                </div>
+                            )}
+
+                            <div className="relative">
+                                <div className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-500">
+                                    <Mail size={18} />
+                                </div>
+                                <input
+                                    type="email"
+                                    required
+                                    className="w-full glass bg-white/5 border border-white/10 rounded-2xl p-5 pl-14 text-white font-bold text-sm focus:ring-4 focus:ring-rivals-accent/20 focus:border-rivals-accent outline-none transition-all placeholder:text-slate-700"
+                                    placeholder="Neural ID (Email)"
+                                    value={email}
+                                    onChange={e => setEmail(e.target.value)}
+                                />
+                            </div>
+
+                            <div className="relative">
+                                <div className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-500">
+                                    <Lock size={18} />
+                                </div>
+                                <input
+                                    type="password"
+                                    required
+                                    className="w-full glass bg-white/5 border border-white/10 rounded-2xl p-5 pl-14 text-white font-bold text-sm focus:ring-4 focus:ring-rivals-accent/20 focus:border-rivals-accent outline-none transition-all placeholder:text-slate-700"
+                                    placeholder="Security Key (Password)"
+                                    value={password}
+                                    onChange={e => setPassword(e.target.value)}
+                                />
+                            </div>
+                        </div>
+
+                        <button
+                            type="submit"
+                            disabled={loading}
+                            className="w-full bg-rivals-accent hover:bg-violet-500 text-white font-black py-5 rounded-2xl transition-all shadow-2xl shadow-rivals-accent/20 border border-white/10 mt-6 active:scale-95 disabled:opacity-50 flex items-center justify-center gap-3 uppercase tracking-[0.2em] text-xs"
+                        >
+                            {loading ? (
+                                <span className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent" />
+                            ) : (
+                                <>
+                                    {isSignUp ? <Zap size={18} /> : <Lock size={18} />}
+                                    {isSignUp ? 'Complete enlisting' : 'Initialize Session'}
+                                </>
+                            )}
+                        </button>
                     </form>
-                )}
 
+                    <div className="mt-8 pt-8 border-t border-white/5 flex items-start gap-4 text-slate-500 italic">
+                        <Info size={16} className="shrink-0 mt-0.5" />
+                        <p className="text-[10px] leading-relaxed">
+                            {isSignUp
+                                ? "By enlisting, you agree to the Arena's Rules of Engagement. Your neural link will be secured via military-grade encryption."
+                                : "Lost your security key? Contact High Command for manual override protocols."}
+                        </p>
+                    </div>
+                </div>
+
+                <div className="mt-12 text-center text-slate-700">
+                    <p className="text-[10px] font-black uppercase tracking-[0.4em]">Rivals Arena © 2024 • Built for Elite Competitors</p>
+                </div>
             </div>
-
-            <p className="absolute bottom-8 text-slate-600 text-xs">
-                Rivals Arena Tournament Manager v1.0
-            </p>
         </div>
     );
 };
