@@ -52,7 +52,7 @@ const TournamentDetails: React.FC = () => {
       }
     } catch (err) {
       console.error(err);
-      showToast('Error loading live feed', 'error');
+      showToast('Erreur lors du chargement du flux direct', 'error');
     } finally {
       setLoading(false);
     }
@@ -64,10 +64,10 @@ const TournamentDetails: React.FC = () => {
       const updated = await tournamentService.updateMatch(tournament.id, matchId, scoreA, scoreB, winnerId, isComplete);
       if (updated) {
         setTournament(updated);
-        showToast('Strategic outcome recorded', 'success');
+        showToast('Résultat stratégique enregistré', 'success');
       }
     } catch (err) {
-      showToast('Failed to sync outcome', 'error');
+      showToast('Échec de la synchronisation du résultat', 'error');
     }
   };
 
@@ -76,13 +76,13 @@ const TournamentDetails: React.FC = () => {
     try {
       const res = await tournamentService.registerPlayer(tournament.id, user.username, user.profile?.rivalsLevel || 1);
       if (res.success) {
-        showToast('Deployment confirmed: Entered queue', 'success');
+        showToast('Déploiement confirmé : Entrée en file d\'attente', 'success');
         refreshData();
       } else {
         showToast(res.message, 'error');
       }
     } catch (err) {
-      showToast('Connection interrupted', 'error');
+      showToast('Connexion interrompue', 'error');
     }
   };
 
@@ -118,7 +118,7 @@ const TournamentDetails: React.FC = () => {
         <div className="absolute top-0 right-0 p-4">
           <div className="flex items-center gap-2 px-3 py-1 bg-rivals-neon/10 border border-rivals-neon/20 rounded-full animate-glow-pulse">
             <Activity size={12} className="text-rivals-neon" />
-            <span className="text-[10px] font-black text-rivals-neon tracking-widest uppercase">Live Link Active</span>
+            <span className="text-[10px] font-black text-rivals-neon tracking-widest uppercase">Liaison Directe Active</span>
           </div>
         </div>
 
@@ -126,16 +126,17 @@ const TournamentDetails: React.FC = () => {
           <button
             onClick={() => navigate('/')}
             className="p-4 glass hover:bg-white/10 rounded-2xl text-slate-400 hover:text-white transition-all group active:scale-90"
+            title="Retour au Tableau de Bord"
           >
             <ArrowLeft size={24} className="group-hover:-translate-x-1 transition-transform" />
           </button>
           <div>
             <div className="flex items-center gap-3 mb-2">
               <span className={`px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest border ${tournament.status === 'Open' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' :
-                  tournament.status === 'Active' ? 'bg-rivals-neon/10 text-rivals-neon border-rivals-neon/20 shadow-[0_0_10px_rgba(34,211,238,0.2)]' :
-                    'bg-slate-800 text-slate-500 border-white/5'
+                tournament.status === 'Active' ? 'bg-rivals-neon/10 text-rivals-neon border-rivals-neon/20 shadow-[0_0_10px_rgba(34,211,238,0.2)]' :
+                  'bg-slate-800 text-slate-500 border-white/5'
                 }`}>
-                {tournament.status}
+                {tournament.status === 'Open' ? 'OUVERT' : tournament.status === 'Active' ? 'EN COURS' : tournament.status === 'Completed' ? 'TERMINÉ' : tournament.status}
               </span>
               <span className="text-slate-500 font-mono text-[10px] font-bold tracking-widest uppercase">ID: {tournament.id.substring(0, 8)}</span>
             </div>
@@ -155,7 +156,7 @@ const TournamentDetails: React.FC = () => {
               onClick={handleJoin}
               className="px-8 py-4 bg-rivals-accent hover:bg-violet-500 text-white font-black rounded-2xl transition-all shadow-[0_0_30px_rgba(139,92,246,0.3)] flex items-center gap-3 active:scale-95"
             >
-              <Plus size={24} /> DEPLOY TO ARENA
+              <Plus size={24} /> DÉPLOIEMENT D'URGENCE
             </button>
           )}
 
@@ -164,7 +165,7 @@ const TournamentDetails: React.FC = () => {
               onClick={() => tournamentService.startTournament(tournament.id).then(() => refreshData())}
               className="px-8 py-4 bg-white text-rivals-darker hover:bg-slate-200 font-black rounded-2xl transition-all shadow-xl flex items-center gap-3 active:scale-95"
             >
-              <PlayCircle size={24} /> COMMENCE OPERATION
+              <PlayCircle size={24} /> LANCER L'OPÉRATION
             </button>
           )}
         </div>
@@ -173,16 +174,16 @@ const TournamentDetails: React.FC = () => {
       {/* Navigation Tabs */}
       <div className="flex gap-4 p-2 glass rounded-2xl border border-white/5 w-fit">
         {[
-          { id: 'bracket', label: 'Tactical Bracket', icon: BarChart2 },
-          { id: 'teams', label: 'Combatants', icon: Users },
-          { id: 'overview', label: 'Mission Brief', icon: Info },
+          { id: 'bracket', label: 'Arborescence Tactique', icon: BarChart2 },
+          { id: 'teams', label: 'Combattants', icon: Users },
+          { id: 'overview', label: 'Briefing de Mission', icon: Info },
         ].map(tab => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id as any)}
             className={`flex items-center gap-3 px-6 py-3 text-xs font-black uppercase tracking-widest rounded-xl transition-all duration-300 ${activeTab === tab.id
-                ? 'bg-rivals-accent text-white shadow-lg'
-                : 'text-slate-500 hover:text-slate-300 hover:bg-white/5'
+              ? 'bg-rivals-accent text-white shadow-lg'
+              : 'text-slate-500 hover:text-slate-300 hover:bg-white/5'
               }`}
           >
             <tab.icon size={16} />
@@ -208,8 +209,8 @@ const TournamentDetails: React.FC = () => {
               {tournament.matches.length === 0 && (
                 <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-12">
                   <Trophy size={64} className="text-slate-800 mb-6 animate-pulse" />
-                  <h3 className="text-2xl font-black text-slate-500 uppercase tracking-tighter">Bracket Pending Generation</h3>
-                  <p className="text-slate-600 font-medium max-w-sm">Awaiting sufficient combatant deployment to initialize tactical grid.</p>
+                  <h3 className="text-2xl font-black text-slate-500 uppercase tracking-tighter">Arborescence en attente</h3>
+                  <p className="text-slate-600 font-medium max-w-sm">En attente d'un déploiement suffisant de combattants pour initialiser la grille tactique.</p>
                 </div>
               )}
             </div>
@@ -218,7 +219,7 @@ const TournamentDetails: React.FC = () => {
               {tournament.teams.length === 0 && (
                 <div className="col-span-full py-32 text-center glass rounded-[2.5rem] border border-dashed border-white/10">
                   <Users className="mx-auto text-slate-800 mb-6" size={64} />
-                  <p className="text-slate-500 font-black uppercase tracking-widest">No combatants reported for duty</p>
+                  <p className="text-slate-500 font-black uppercase tracking-widest">Aucun combattant n'a répondu à l'appel</p>
                 </div>
               )}
               {tournament.teams.map((team, idx) => (
@@ -232,7 +233,7 @@ const TournamentDetails: React.FC = () => {
                       <div className="flex items-center gap-2 mt-1">
                         <span className="w-2 h-2 rounded-full bg-emerald-500" />
                         <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest">
-                          Combat Readiness: {Math.round(team.players.reduce((acc, p) => acc + (p.rating || 1000), 0) / team.players.length)} Elo
+                          État d'Alerte : {Math.round(team.players.reduce((acc, p) => acc + (p.rating || 1000), 0) / team.players.length)} Elo
                         </p>
                       </div>
                     </div>
@@ -245,11 +246,11 @@ const TournamentDetails: React.FC = () => {
             <div className="glass-heavy border border-white/5 rounded-[2.5rem] p-12 relative overflow-hidden">
               <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-rivals-accent to-transparent" />
               <h2 className="text-3xl font-black text-white italic tracking-tighter mb-8 flex items-center gap-4">
-                <Sparkles className="text-rivals-accent" /> MISSION PARAMETERS
+                <Sparkles className="text-rivals-accent" /> PARAMÈTRES DE LA MISSION
               </h2>
               <div className="prose prose-invert max-w-none">
                 <p className="text-slate-400 text-xl leading-relaxed font-medium">
-                  {tournament.description || 'No specific mission brief provided by High Command.'}
+                  {tournament.description || 'Aucun briefing spécifique fourni par le Haut Commandement.'}
                 </p>
               </div>
 
@@ -257,14 +258,14 @@ const TournamentDetails: React.FC = () => {
                 <div className="flex items-center gap-6 glass p-6 rounded-3xl">
                   <div className="p-4 bg-white/5 rounded-2xl text-rivals-neon"><PlayCircle size={32} /></div>
                   <div>
-                    <p className="text-[10px] text-slate-600 font-black uppercase tracking-[.3em] mb-1">Execution Date</p>
-                    <p className="text-white font-black text-xl">{new Date(tournament.startDate).toLocaleString()}</p>
+                    <p className="text-[10px] text-slate-600 font-black uppercase tracking-[.3em] mb-1">Date d'Exécution</p>
+                    <p className="text-white font-black text-xl">{new Date(tournament.startDate).toLocaleString('fr-FR')}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-6 glass p-6 rounded-3xl">
                   <div className="p-4 bg-white/5 rounded-2xl text-rivals-accent"><Trophy size={32} /></div>
                   <div>
-                    <p className="text-[10px] text-slate-600 font-black uppercase tracking-[.3em] mb-1">Pot Rewards</p>
+                    <p className="text-[10px] text-slate-600 font-black uppercase tracking-[.3em] mb-1">Dotation Finale</p>
                     <p className="text-white font-black text-xl">{tournament.prizePool}</p>
                   </div>
                 </div>
@@ -278,13 +279,13 @@ const TournamentDetails: React.FC = () => {
           <div className="glass-heavy border border-white/5 p-8 rounded-[2rem] shadow-2xl relative overflow-hidden group">
             <div className="absolute top-0 left-0 w-1 h-full bg-rivals-neon opacity-20" />
             <h3 className="text-xs font-black text-slate-500 uppercase tracking-[.3em] mb-8 flex items-center justify-between">
-              Live Intel
+              Flux en Direct
               <Loader2 size={12} className="animate-spin text-rivals-neon" />
             </h3>
             <div className="space-y-6">
               <div className="space-y-2">
                 <div className="flex justify-between text-[11px] font-black uppercase tracking-widest text-slate-500">
-                  <span>Grid Capacity</span>
+                  <span>Capacité Grille</span>
                   <span className="text-white">{Math.round((tournament.teams.length / tournament.maxTeams) * 100)}%</span>
                 </div>
                 <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden">
@@ -297,9 +298,9 @@ const TournamentDetails: React.FC = () => {
 
               <div className="pt-6 border-t border-white/5 space-y-4">
                 {[
-                  { label: 'Deployed', val: `${tournament.teams.length} Teams` },
-                  { label: 'Operation', val: tournament.format },
-                  { label: 'Hot Waitlist', val: `${tournament.pendingPlayers.length} Souls`, color: 'text-rivals-neon' },
+                  { label: 'Déployés', val: `${tournament.teams.length} Équipes` },
+                  { label: 'Format', val: tournament.format },
+                  { label: 'Liste d\'Attente', val: `${tournament.pendingPlayers.length} Âmes`, color: 'text-rivals-neon' },
                 ].map((row, i) => (
                   <div key={i} className="flex justify-between items-center group/row cursor-default">
                     <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest group-hover/row:text-slate-300 transition-colors">{row.label}</span>
@@ -313,9 +314,9 @@ const TournamentDetails: React.FC = () => {
           <div className="bg-gradient-to-br from-rivals-accent/10 to-rivals-neon/5 border border-white/5 p-8 rounded-[2rem] relative overflow-hidden">
             <div className="relative z-10">
               <Trophy size={32} className="text-rivals-accent mb-6" />
-              <h4 className="text-lg font-black text-white italic tracking-tighter mb-4 uppercase">Dominance Notice</h4>
+              <h4 className="text-lg font-black text-white italic tracking-tighter mb-4 uppercase">Avis de Dominance</h4>
               <p className="text-xs text-slate-400 leading-relaxed font-medium">
-                Verified combat outcomes are final. Anti-cheat metrics are active for all active match links.
+                Les résultats de combat vérifiés sont définitifs. Les protocoles anti-fraude sont actifs pour tous les engagements.
               </p>
             </div>
             <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-rivals-accent/20 blur-3xl rounded-full" />

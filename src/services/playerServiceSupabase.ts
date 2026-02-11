@@ -4,18 +4,18 @@ import { UserProfile } from '../types';
 export type AchievementRarity = 'common' | 'rare' | 'legendary';
 
 export const ACHIEVEMENT_MASTER_LIST: Record<string, { name: string, description: string, icon: string, rarity: AchievementRarity }> = {
-    'FIRST_BLOOD': { name: 'First Blood', description: 'Win your first match', icon: 'Sword', rarity: 'common' },
-    'WAR_HERO': { name: 'War Hero', description: 'Accumulate 10 total wins', icon: 'Shield', rarity: 'rare' },
-    'ELITE_TACTICIAN': { name: 'Elite Tactician', description: 'Reach Diamond Rank (1500+ Elo)', icon: 'Target', rarity: 'legendary' },
-    'TOURNAMENT_LORD': { name: 'Tournament Lord', description: 'Play in 5 different tournaments', icon: 'Trophy', rarity: 'rare' },
-    'UNSTOPPABLE': { name: 'Unstoppable', description: 'Win 5 matches in a row', icon: 'Flame', rarity: 'legendary' },
-    'GLADIATOR': { name: 'Gladiator', description: 'Complete 3 tournaments', icon: 'Crown', rarity: 'common' },
+    'FIRST_BLOOD': { name: 'Premier Sang', description: 'Gagnez votre premier match', icon: 'Sword', rarity: 'common' },
+    'WAR_HERO': { name: 'Héros de Guerre', description: 'Accumulez 10 victoires au total', icon: 'Shield', rarity: 'rare' },
+    'ELITE_TACTICIAN': { name: 'Tacticien Élite', description: 'Atteignez le rang Diamant (1500+ Elo)', icon: 'Target', rarity: 'legendary' },
+    'TOURNAMENT_LORD': { name: 'Seigneur des Tournois', description: 'Participez à 5 tournois différents', icon: 'Trophy', rarity: 'rare' },
+    'UNSTOPPABLE': { name: 'Inarrêtable', description: 'Gagnez 5 matchs d\'affilée', icon: 'Flame', rarity: 'legendary' },
+    'GLADIATOR': { name: 'Gladiateur', description: 'Terminez 3 tournois', icon: 'Crown', rarity: 'common' },
 };
 
 export const RARITY_CONFIG: Record<AchievementRarity, { label: string, border: string, bg: string, text: string, glow: string }> = {
-    common: { label: 'Common', border: 'border-slate-500/30', bg: 'bg-slate-500/10', text: 'text-slate-400', glow: '' },
+    common: { label: 'Commun', border: 'border-slate-500/30', bg: 'bg-slate-500/10', text: 'text-slate-400', glow: '' },
     rare: { label: 'Rare', border: 'border-blue-500/40', bg: 'bg-blue-500/10', text: 'text-blue-400', glow: 'shadow-[0_0_15px_rgba(59,130,246,0.15)]' },
-    legendary: { label: 'Legendary', border: 'border-amber-400/50', bg: 'bg-amber-400/10', text: 'text-amber-400', glow: 'shadow-[0_0_25px_rgba(251,191,36,0.2)]' },
+    legendary: { label: 'Légendaire', border: 'border-amber-400/50', bg: 'bg-amber-400/10', text: 'text-amber-400', glow: 'shadow-[0_0_25px_rgba(251,191,36,0.2)]' },
 };
 
 export const playerServiceSupabase = {
@@ -62,7 +62,7 @@ export const playerServiceSupabase = {
             losses: data.losses || 0,
             tournamentsPlayed: 0,
             rating: data.rating || 1000,
-            rank: data.rank || 'Unranked',
+            rank: data.rank || 'Non Classé',
             achievements: data.achievements || [],
             rivalsLevel: data.rivals_level || 1,
             avatarUrl: data.avatar_url || '',
@@ -87,7 +87,7 @@ export const playerServiceSupabase = {
             losses: data.losses || 0,
             tournamentsPlayed: 0,
             rating: data.rating || 1000,
-            rank: data.rank || 'Unranked',
+            rank: data.rank || 'Non Classé',
             achievements: data.achievements || [],
             rivalsLevel: data.rivals_level || 1,
             avatarUrl: data.avatar_url || '',
@@ -130,10 +130,10 @@ export const playerServiceSupabase = {
         let newRank = 'Bronze';
         if (newRating >= 2000) newRank = 'Grand Champion';
         else if (newRating >= 1800) newRank = 'Champion';
-        else if (newRating >= 1500) newRank = 'Diamond';
-        else if (newRating >= 1300) newRank = 'Platinum';
-        else if (newRating >= 1100) newRank = 'Gold';
-        else if (newRating >= 1000) newRank = 'Silver';
+        else if (newRating >= 1500) newRank = 'Diamant';
+        else if (newRating >= 1300) newRank = 'Platine';
+        else if (newRating >= 1100) newRank = 'Or';
+        else if (newRating >= 1000) newRank = 'Argent';
 
         // Achievement Check
         const currentAchievements = profile.achievements || [];
@@ -236,5 +236,22 @@ export const playerServiceSupabase = {
                 date: m.created_at
             };
         });
+    },
+    upgradeToAdmin: async (userId: string, code: string): Promise<{ success: boolean, message: string }> => {
+        // Legacy support for the user's requested "code"
+        const SECRET_CODE = '1704'; // Historical preference based on logs
+
+        if (code !== SECRET_CODE) {
+            return { success: false, message: 'Code de sécurité invalide.' };
+        }
+
+        const { error } = await supabase
+            .from('profiles')
+            .update({ role: 'admin' })
+            .eq('id', userId);
+
+        if (error) return { success: false, message: 'Erreur lors de la synchronisation High Command.' };
+
+        return { success: true, message: 'Accès High Command activé !' };
     }
 };

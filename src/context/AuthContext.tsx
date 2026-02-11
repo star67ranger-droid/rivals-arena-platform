@@ -123,7 +123,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             if (profileError) console.error('Error creating profile:', profileError);
         }
 
-        return { error: null };
+        return { error: null, data };
     };
 
     const signOut = async () => {

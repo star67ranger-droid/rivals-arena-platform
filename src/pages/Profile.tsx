@@ -66,7 +66,7 @@ const Profile: React.FC = () => {
 
     const handleShare = () => {
         navigator.clipboard.writeText(window.location.href);
-        showToast('Profile Intel Encrypted & Copied', 'info');
+        showToast('Intel du Profil Chiffré & Copié', 'info');
     };
 
     if (loading) {
@@ -91,8 +91,8 @@ const Profile: React.FC = () => {
         return (
             <div className="text-center py-32 glass rounded-[3rem] border border-dashed border-white/10 max-w-xl mx-auto mt-20">
                 <Shield size={64} className="mx-auto text-slate-800 mb-6" />
-                <h3 className="text-2xl font-black text-white uppercase tracking-tighter">Identity Nullified</h3>
-                <p className="text-slate-500 font-medium">This combatant does not exist in our active database.</p>
+                <h3 className="text-2xl font-black text-white uppercase tracking-tighter">Identité Neutralisée</h3>
+                <p className="text-slate-500 font-medium">Ce combattant n'existe pas dans notre base de données active.</p>
             </div>
         );
     }
@@ -132,7 +132,7 @@ const Profile: React.FC = () => {
                             </span>
                         </div>
                         <p className="text-slate-400 text-lg font-medium max-w-xl leading-relaxed italic">
-                            "{profile.bio || 'Silence is my only ally in the arena.'}"
+                            "{profile.bio || 'Le silence est mon seul allié dans l\'arène.'}"
                         </p>
                     </div>
 
@@ -159,10 +159,10 @@ const Profile: React.FC = () => {
             {/* Tactical Metrics Grid */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
                 {[
-                    { label: 'Total Victories', val: profile.wins, icon: Award, color: 'text-emerald-400', bg: 'bg-emerald-400/5' },
-                    { label: 'Missions Complete', val: profile.tournamentsPlayed, icon: Swords, color: 'text-hot', bg: 'bg-hot/5' },
-                    { label: 'Global Ranking', val: ranking > 0 ? `#${ranking}` : '—', icon: Trophy, color: 'text-rivals-neon', bg: 'bg-rivals-neon/5' },
-                    { label: 'Victory Probability', val: `${winRate.toFixed(0)}%`, icon: Target, color: 'text-rivals-accent', bg: 'bg-rivals-accent/5' },
+                    { label: 'Victoires Totales', val: profile.wins, icon: Award, color: 'text-emerald-400', bg: 'bg-emerald-400/5' },
+                    { label: 'Missions Complétées', val: profile.tournamentsPlayed, icon: Swords, color: 'text-hot', bg: 'bg-hot/5' },
+                    { label: 'Rang Mondial', val: ranking > 0 ? `#${ranking}` : '—', icon: Trophy, color: 'text-rivals-neon', bg: 'bg-rivals-neon/5' },
+                    { label: 'Probabilité de Victoire', val: `${winRate.toFixed(0)}%`, icon: Target, color: 'text-rivals-accent', bg: 'bg-rivals-accent/5' },
                 ].map((stat, i) => (
                     <div key={i} className={`glass ${stat.bg} p-8 rounded-[2.5rem] border border-white/5 flex items-center gap-6 hover:border-white/20 transition-all duration-500 group`}>
                         <div className={`w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center ${stat.color} group-hover:scale-110 transition-transform`}>
@@ -182,15 +182,15 @@ const Profile: React.FC = () => {
                     <div className="flex items-center justify-between px-4">
                         <h3 className="text-2xl font-black text-white italic tracking-tighter uppercase flex items-center gap-3">
                             <Award className="text-rivals-accent" />
-                            Honors & Accolades
+                            Honneurs & Distinctions
                         </h3>
-                        <span className="text-xs text-slate-500 font-bold">{profile.achievements.length} UNLOCKED</span>
+                        <span className="text-xs text-slate-500 font-bold">{profile.achievements.length} DÉBLOQUÉS</span>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {profile.achievements.length === 0 ? (
                             <div className="col-span-full py-12 text-center glass border border-dashed border-white/5 rounded-3xl">
-                                <p className="text-slate-600 font-bold uppercase tracking-widest text-xs italic">No honors attained in this sector yet.</p>
+                                <p className="text-slate-600 font-bold uppercase tracking-widest text-xs italic">Aucun honneur obtenu dans ce secteur pour le moment.</p>
                             </div>
                         ) : profile.achievements.map((achId, i) => {
                             const achData = ACHIEVEMENT_MASTER_LIST[achId];
@@ -224,22 +224,22 @@ const Profile: React.FC = () => {
                         <div className="flex items-center justify-between mb-8 px-4">
                             <h3 className="text-2xl font-black text-white italic tracking-tighter uppercase flex items-center gap-3">
                                 <History className="text-rivals-neon" />
-                                Combat History
+                                Historique de Combat
                             </h3>
-                            <span className="text-xs text-slate-500 font-bold">{matchHistory.length} RECORDED</span>
+                            <span className="text-xs text-slate-500 font-bold">{matchHistory.length} ENREGISTRÉS</span>
                         </div>
 
                         {matchHistory.length === 0 ? (
                             <div className="glass rounded-[3rem] border border-white/5 p-12 text-center">
                                 <LayoutDashboard size={48} className="mx-auto text-slate-800 mb-6" />
-                                <p className="text-slate-500 font-black uppercase tracking-widest text-xs">No combat records yet. Enter a tournament to begin.</p>
+                                <p className="text-slate-500 font-black uppercase tracking-widest text-xs">Aucun enregistrement de combat. Rejoignez un tournoi pour commencer.</p>
                             </div>
                         ) : (
                             <div className="space-y-3">
                                 {matchHistory.map((match) => (
                                     <div key={match.matchId} className={`glass rounded-2xl p-5 flex items-center gap-4 border transition-all duration-300 hover:scale-[1.01] ${match.won ? 'border-emerald-500/20 hover:border-emerald-500/40' : 'border-red-500/20 hover:border-red-500/40'}`}>
                                         <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-black text-xs ${match.won ? 'bg-emerald-500/15 text-emerald-400' : 'bg-red-500/15 text-red-400'}`}>
-                                            {match.won ? 'W' : 'L'}
+                                            {match.won ? 'V' : 'D'}
                                         </div>
                                         <div className="flex-1 min-w-0">
                                             <p className="text-sm font-black text-white uppercase tracking-tight truncate">
@@ -252,7 +252,7 @@ const Profile: React.FC = () => {
                                                 {match.scoreA} - {match.scoreB}
                                             </p>
                                             <p className="text-[9px] text-slate-600 font-bold uppercase tracking-widest">
-                                                {new Date(match.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                                                {new Date(match.date).toLocaleDateString('fr-FR', { month: 'short', day: 'numeric' })}
                                             </p>
                                         </div>
                                         <ChevronRight size={16} className="text-slate-700" />
@@ -267,28 +267,28 @@ const Profile: React.FC = () => {
                 <div className="space-y-8">
                     <div className="glass-heavy border border-white/5 p-8 rounded-[3rem] shadow-2xl relative overflow-hidden group">
                         <div className="absolute inset-0 bg-gradient-to-br from-rivals-neon/5 to-transparent pointer-events-none" />
-                        <h3 className="text-xs font-black text-slate-600 uppercase tracking-[0.4em] mb-8">System Intel</h3>
+                        <h3 className="text-xs font-black text-slate-600 uppercase tracking-[0.4em] mb-8">Intel Système</h3>
                         <div className="space-y-6 uppercase font-black text-[10px] tracking-widest">
                             <div className="flex justify-between border-b border-white/5 pb-4">
-                                <span className="text-slate-500">Tier Status</span>
+                                <span className="text-slate-500">Statut du Grade</span>
                                 <span className="text-white">{profile.rank}</span>
                             </div>
                             <div className="flex justify-between border-b border-white/5 pb-4">
-                                <span className="text-slate-500">Global Rank</span>
-                                <span className="text-rivals-neon">{ranking > 0 ? `#${ranking}` : 'Unranked'}</span>
+                                <span className="text-slate-500">Rang Mondial</span>
+                                <span className="text-rivals-neon">{ranking > 0 ? `#${ranking}` : 'Non Classé'}</span>
                             </div>
                             <div className="flex justify-between border-b border-white/5 pb-4">
-                                <span className="text-slate-500">Win Rate</span>
+                                <span className="text-slate-500">Taux de Victoire</span>
                                 <span className="text-white">{winRate.toFixed(1)}%</span>
                             </div>
                             <div className="flex justify-between border-b border-white/5 pb-4">
-                                <span className="text-slate-500">Operation Level</span>
+                                <span className="text-slate-500">Niveau d'Opération</span>
                                 <span className="text-rivals-neon">LVL {profile.rivalsLevel || 1}</span>
                             </div>
                         </div>
 
                         <div className="mt-10 p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl">
-                            <p className="text-[10px] text-emerald-400 font-black text-center tracking-widest">IDENTITY VERIFIED BY HIGH COMMAND</p>
+                            <p className="text-[10px] text-emerald-400 font-black text-center tracking-widest">IDENTITÉ VÉRIFIÉE PAR LE HAUT COMMANDEMENT</p>
                         </div>
                     </div>
                 </div>

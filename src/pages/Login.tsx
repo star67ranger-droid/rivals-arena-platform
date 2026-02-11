@@ -23,28 +23,35 @@ const Login: React.FC = () => {
         try {
             if (isSignUp) {
                 if (!username) {
-                    showToast('Username is required for enlistment', 'error');
+                    showToast('Un pseudonyme est requis pour l\'enrôlement', 'error');
                     setLoading(false);
                     return;
                 }
-                const { error } = await signUp(email, password, username);
+                const { error, data } = await (signUp(email, password, username) as any);
                 if (error) {
                     showToast(error.message, 'error');
+                } else if (data?.session) {
+                    showToast('Enrôlement réussi ! Lien neural établi.', 'success');
+                    navigate('/');
                 } else {
-                    showToast('Enlistment successful! You can now sign in.', 'success');
+                    showToast('Enrôlement initié ! Vérifiez vos emails pour confirmer le lien.', 'success');
                     setIsSignUp(false);
                 }
             } else {
                 const { error } = await signIn(email, password);
                 if (error) {
-                    showToast('Access Denied: Invalid credentials', 'error');
+                    let msg = 'Accès Refusé : Identifiants invalides';
+                    if (error.message?.includes('Email not confirmed')) {
+                        msg = 'Lien neural non confirmé. Vérifiez vos emails.';
+                    }
+                    showToast(msg, 'error');
                 } else {
-                    showToast('Welcome back, Commander', 'success');
+                    showToast('Bon retour, Commandant', 'success');
                     navigate('/');
                 }
             }
         } catch (err) {
-            showToast('Neural link failed. Try again.', 'error');
+            showToast('Lien neural rompu. Réessayez.', 'error');
         } finally {
             setLoading(false);
         }
@@ -70,7 +77,7 @@ const Login: React.FC = () => {
                     <h1 className="text-5xl font-black text-white tracking-tighter italic uppercase mb-2">
                         Rivals<span className="text-rivals-neon">Arena</span>
                     </h1>
-                    <p className="text-[10px] text-slate-500 font-black tracking-[0.5em] uppercase">Tactical Deployment Portal</p>
+                    <p className="text-[10px] text-slate-500 font-black tracking-[0.5em] uppercase">Portail de Déploiement Tactique</p>
                 </div>
 
                 <div className="glass-heavy border border-white/5 rounded-[3.5rem] p-10 md:p-12 relative overflow-hidden shadow-2xl">
@@ -83,14 +90,14 @@ const Login: React.FC = () => {
                                 onClick={() => setIsSignUp(false)}
                                 className={`flex-1 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${!isSignUp ? 'bg-rivals-accent text-white shadow-lg' : 'text-slate-500 hover:text-slate-300'}`}
                             >
-                                Sign In
+                                Connexion
                             </button>
                             <button
                                 type="button"
                                 onClick={() => setIsSignUp(true)}
                                 className={`flex-1 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${isSignUp ? 'bg-rivals-accent text-white shadow-lg' : 'text-slate-500 hover:text-slate-300'}`}
                             >
-                                Enlist
+                                S'enrôler
                             </button>
                         </div>
 
@@ -104,7 +111,7 @@ const Login: React.FC = () => {
                                         type="text"
                                         required
                                         className="w-full glass bg-white/5 border border-white/10 rounded-2xl p-5 pl-14 text-white font-bold text-sm focus:ring-4 focus:ring-rivals-accent/20 focus:border-rivals-accent outline-none transition-all placeholder:text-slate-700"
-                                        placeholder="Tactical Callsign (Username)"
+                                        placeholder="Indicatif Tactique (Pseudo)"
                                         value={username}
                                         onChange={e => setUsername(e.target.value)}
                                     />
@@ -119,7 +126,7 @@ const Login: React.FC = () => {
                                     type="email"
                                     required
                                     className="w-full glass bg-white/5 border border-white/10 rounded-2xl p-5 pl-14 text-white font-bold text-sm focus:ring-4 focus:ring-rivals-accent/20 focus:border-rivals-accent outline-none transition-all placeholder:text-slate-700"
-                                    placeholder="Neural ID (Email)"
+                                    placeholder="ID Neural (Email)"
                                     value={email}
                                     onChange={e => setEmail(e.target.value)}
                                 />
@@ -133,7 +140,7 @@ const Login: React.FC = () => {
                                     type="password"
                                     required
                                     className="w-full glass bg-white/5 border border-white/10 rounded-2xl p-5 pl-14 text-white font-bold text-sm focus:ring-4 focus:ring-rivals-accent/20 focus:border-rivals-accent outline-none transition-all placeholder:text-slate-700"
-                                    placeholder="Security Key (Password)"
+                                    placeholder="Clé de Sécurité (Mot de passe)"
                                     value={password}
                                     onChange={e => setPassword(e.target.value)}
                                 />
@@ -150,7 +157,7 @@ const Login: React.FC = () => {
                             ) : (
                                 <>
                                     {isSignUp ? <Zap size={18} /> : <Lock size={18} />}
-                                    {isSignUp ? 'Complete enlisting' : 'Initialize Session'}
+                                    {isSignUp ? 'Finaliser l\'enrôlement' : 'Initialiser la Session'}
                                 </>
                             )}
                         </button>
@@ -160,14 +167,14 @@ const Login: React.FC = () => {
                         <Info size={16} className="shrink-0 mt-0.5" />
                         <p className="text-[10px] leading-relaxed">
                             {isSignUp
-                                ? "By enlisting, you agree to the Arena's Rules of Engagement. Your neural link will be secured via military-grade encryption."
-                                : "Lost your security key? Contact High Command for manual override protocols."}
+                                ? "En vous enrôlant, vous acceptez les Règles d'Engagement de l'Arène. Votre lien neural sera sécurisé par cryptage de grade militaire."
+                                : "Clé de sécurité perdue ? Contactez le Haut Commandement pour les protocoles de secours."}
                         </p>
                     </div>
                 </div>
 
                 <div className="mt-12 text-center text-slate-700">
-                    <p className="text-[10px] font-black uppercase tracking-[0.4em]">Rivals Arena © 2024 • Built for Elite Competitors</p>
+                    <p className="text-[10px] font-black uppercase tracking-[0.4em]">Rivals Arena © 2024 • Conçu pour l'Élite</p>
                 </div>
             </div>
         </div>

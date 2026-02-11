@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { UserProfile } from '../types';
 import { playerService } from '../services/playerService';
-import { Trophy, Medal, Crown, Star, TrendingUp, ChevronRight, Swords, Target } from 'lucide-react';
+import { Trophy, Medal, Crown, Star, TrendingUp, ChevronRight, Swords, Target, Users } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import Skeleton from '../components/Skeleton';
 
@@ -47,9 +47,9 @@ const Leaderboard: React.FC = () => {
                     <Trophy size={160} className="text-rivals-accent" />
                 </div>
                 <h1 className="text-6xl font-black text-white italic tracking-tighter uppercase mb-2">
-                    Hall of <span className="text-transparent bg-clip-text bg-gradient-to-r from-rivals-neon via-rivals-accent to-hot">Global Legends</span>
+                    Panthéon des <span className="text-transparent bg-clip-text bg-gradient-to-r from-rivals-neon via-rivals-accent to-hot">Légendes Mondiales</span>
                 </h1>
-                <p className="text-slate-500 font-bold tracking-[0.3em] uppercase text-xs">The verified elite hierarchy of rivals arena</p>
+                <p className="text-slate-500 font-bold tracking-[0.3em] uppercase text-xs">La hiérarchie élite vérifiée de Rivals Arena</p>
                 <div className="w-24 h-1 bg-rivals-accent mx-auto mt-6 rounded-full shadow-[0_0_15px_#8b5cf6]" />
             </div>
 
@@ -121,11 +121,11 @@ const Leaderboard: React.FC = () => {
             <div className="glass-heavy rounded-[3rem] border border-white/5 overflow-hidden shadow-2xl">
                 <div className="p-8 border-b border-white/5 flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <h3 className="text-xl font-black text-white italic tracking-tighter uppercase flex items-center gap-3">
-                        <TrendingUp className="text-rivals-accent" /> Strategic Hierarchy
+                        <TrendingUp className="text-rivals-accent" /> Hiérarchie Stratégique
                     </h3>
                     <div className="flex gap-4">
                         <div className="px-4 py-2 bg-white/5 rounded-xl border border-white/5 text-[9px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">
-                            <Users size={12} /> Total Combatants: {players.length}
+                            <Users size={12} /> Total des Combattants : {players.length}
                         </div>
                     </div>
                 </div>
@@ -134,11 +134,11 @@ const Leaderboard: React.FC = () => {
                     <table className="w-full text-left">
                         <thead className="bg-slate-950/50 text-slate-500 uppercase text-[10px] font-black tracking-[.2em]">
                             <tr>
-                                <th className="p-6 w-20 text-center">Pos</th>
-                                <th className="p-6">Entity</th>
+                                <th className="p-6 w-20 text-center">Rang</th>
+                                <th className="p-6">Entité</th>
                                 <th className="p-6 text-center">Division</th>
-                                <th className="p-6 text-center">Engagement (W/L)</th>
-                                <th className="p-6 text-right">Combat Power</th>
+                                <th className="p-6 text-center">Engagement (V/D)</th>
+                                <th className="p-6 text-right">Puissance de Combat</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-white/5 relative">
@@ -158,7 +158,7 @@ const Leaderboard: React.FC = () => {
                                                 </span>
                                                 <div className="flex items-center gap-2 mt-1">
                                                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_5px_#10b981]" />
-                                                    <span className="text-[9px] text-slate-500 font-black uppercase tracking-widest">Active Link</span>
+                                                    <span className="text-[9px] text-slate-500 font-black uppercase tracking-widest">Lien Actif</span>
                                                 </div>
                                             </div>
                                         </Link>
@@ -170,15 +170,15 @@ const Leaderboard: React.FC = () => {
                                     </td>
                                     <td className="p-6 text-center text-[11px] font-black tracking-widest">
                                         <div className="flex items-center justify-center gap-3">
-                                            <span className="text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded-md border border-emerald-500/20">{player.wins}W</span>
+                                            <span className="text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded-md border border-emerald-500/20">{player.wins}V</span>
                                             <span className="text-slate-600">/</span>
-                                            <span className="text-hot bg-hot/10 px-2 py-1 rounded-md border border-hot/20">{player.losses}L</span>
+                                            <span className="text-hot bg-hot/10 px-2 py-1 rounded-md border border-hot/20">{player.losses}D</span>
                                         </div>
                                     </td>
                                     <td className="p-6 text-right">
                                         <div className="flex flex-col items-end">
                                             <span className="text-xl font-black text-rivals-neon neon-text italic italic leading-none">{player.rating}</span>
-                                            <span className="text-[9px] text-slate-700 font-black uppercase tracking-widest mt-1">Verified ELO</span>
+                                            <span className="text-[9px] text-slate-700 font-black uppercase tracking-widest mt-1">ELO VÉRIFIÉ</span>
                                         </div>
                                     </td>
                                 </tr>

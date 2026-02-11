@@ -38,20 +38,20 @@ const Admin: React.FC = () => {
             setTournaments(await tournamentService.getAll());
             setProfiles(await playerService.getAll());
         } catch (err) {
-            showToast('Logic Error: Failed to fetch central data', 'error');
+            showToast('Erreur Logique : Échec de la récupération des données centrales', 'error');
         } finally {
             setLoading(false);
         }
     };
 
     const handleDeleteTournament = async (id: string) => {
-        if (confirm('CRITICAL: Permanent data erasure requested. Proceed?')) {
+        if (confirm('CRITIQUE : Effacement permanent des données demandé. Continuer ?')) {
             try {
                 await tournamentService.delete(id);
-                showToast('Entity Scrubbed from Database', 'success');
+                showToast('Entité Effacée de la Base de Données', 'success');
                 await refreshData();
             } catch (err) {
-                showToast('Erasure Failed: System Conflict', 'error');
+                showToast('Effacement Échoué : Conflit Système', 'error');
             }
         }
     };
@@ -60,13 +60,13 @@ const Admin: React.FC = () => {
         try {
             const res = await tournamentService.startTournament(id);
             if (res.success) {
-                showToast('Operation Forcefully Commenced', 'success');
+                showToast('Opération Lancée de Force', 'success');
                 await refreshData();
             } else {
                 showToast(res.message, 'error');
             }
         } catch (err) {
-            showToast('Logic Error: Command Rejected', 'error');
+            showToast('Erreur Logique : Commande Rejetée', 'error');
         }
     };
 
@@ -83,11 +83,11 @@ const Admin: React.FC = () => {
                 rating: editRating,
                 rivalsLevel: editLevel
             });
-            showToast('Subject Parameters Modified', 'success');
+            showToast('Paramètres du Sujet Modifiés', 'success');
             await refreshData();
             setSelectedProfile({ ...selectedProfile, rating: editRating, rivalsLevel: editLevel });
         } catch (err) {
-            showToast('Modification Failed', 'error');
+            showToast('Modification Échouée', 'error');
         }
     };
 
@@ -97,8 +97,8 @@ const Admin: React.FC = () => {
                 <div className="glass-heavy border border-hot/30 p-12 rounded-[3rem] w-full max-w-md text-center shadow-[0_0_100px_rgba(244,63,94,0.1)] relative overflow-hidden">
                     <div className="absolute inset-0 bg-grid-pattern opacity-5 pointer-events-none" />
                     <AlertTriangle size={64} className="text-hot mx-auto mb-6 animate-bounce" />
-                    <h2 className="text-3xl font-black text-white mb-4 tracking-tighter uppercase italic">Access Restricted</h2>
-                    <p className="text-slate-500 font-bold mb-10 text-xs tracking-widest uppercase">Unauthorized access to Central Intelligence is a severe security violation.</p>
+                    <h2 className="text-3xl font-black text-white mb-4 tracking-tighter uppercase italic">Accès Restreint</h2>
+                    <p className="text-slate-500 font-bold mb-10 text-xs tracking-widest uppercase">L'accès non autorisé au Renseignement Central est une violation grave de la sécurité.</p>
                 </div>
             </div>
         );
@@ -115,22 +115,22 @@ const Admin: React.FC = () => {
                 <div className="relative z-10">
                     <div className="flex items-center gap-3 mb-4">
                         <span className="px-3 py-1 bg-hot/10 border border-hot/20 rounded-full text-hot text-[10px] font-black tracking-widest uppercase flex items-center gap-2">
-                            <Terminal size={12} /> High Command Mode: {user?.username}
+                            <Terminal size={12} /> Mode Haut Commandement : {user?.username}
                         </span>
                         <div className="flex items-center gap-2 px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 rounded-full">
                             <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_#10b981]" />
-                            <span className="text-[9px] font-black text-emerald-400 tracking-widest uppercase">Verified Access</span>
+                            <span className="text-[9px] font-black text-emerald-400 tracking-widest uppercase">Accès Vérifié</span>
                         </div>
                     </div>
                     <h1 className="text-5xl font-black text-white mb-2 tracking-tighter italic uppercase flex items-center gap-4">
-                        Central <span className="text-hot">Intelligence</span>
+                        Renseignement <span className="text-hot">Central</span>
                     </h1>
-                    <p className="text-slate-500 text-lg font-medium tracking-tight italic">Ultimate management console for elite operation oversight.</p>
+                    <p className="text-slate-500 text-lg font-medium tracking-tight italic">Console de gestion ultime pour la supervision des opérations élites.</p>
                 </div>
                 <div className="flex items-center gap-4">
                     <div className="text-right hidden md:block">
-                        <p className="text-[10px] font-black text-slate-600 uppercase tracking-widest">Neural Link Status</p>
-                        <p className="text-xs font-black text-white italic">OPERATIONAL // LATEST</p>
+                        <p className="text-[10px] font-black text-slate-600 uppercase tracking-widest">Statut Lien Neural</p>
+                        <p className="text-xs font-black text-white italic">OPÉRATIONNEL // RÉRECENT</p>
                     </div>
                     <button
                         onClick={refreshData}
@@ -149,7 +149,7 @@ const Admin: React.FC = () => {
                         <Database size={150} className="text-hot" />
                     </div>
                     <h2 className="text-2xl font-black text-white mb-10 flex items-center gap-4 italic uppercase tracking-tighter">
-                        <Shield size={32} className="text-hot" /> Field Operations
+                        <Shield size={32} className="text-hot" /> Opérations de Terrain
                     </h2>
 
                     <div className="space-y-4 max-h-[550px] overflow-y-auto pr-4 custom-scrollbar">
@@ -158,7 +158,7 @@ const Admin: React.FC = () => {
                         ) : tournaments.length === 0 ? (
                             <div className="py-24 text-center border border-dashed border-white/10 rounded-[2.5rem] bg-white/5">
                                 <Trophy size={48} className="mx-auto text-slate-800 mb-6" />
-                                <p className="text-slate-600 font-black uppercase tracking-widest text-xs">No active deployments detected.</p>
+                                <p className="text-slate-600 font-black uppercase tracking-widest text-xs">Aucun déploiement actif détecté.</p>
                             </div>
                         ) : tournaments.map(t => (
                             <div key={t.id} className="glass p-5 rounded-2xl border border-white/5 flex justify-between items-center group/card hover:border-hot/30 transition-all duration-500 hover:bg-white/5">
@@ -166,18 +166,18 @@ const Admin: React.FC = () => {
                                     <p className="font-black text-white truncate text-xl uppercase italic tracking-tight group-hover/card:text-hot transition-colors">{t.name}</p>
                                     <div className="flex items-center gap-4 mt-2">
                                         <div className={`px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-widest border ${t.status === 'Active' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-slate-800 text-slate-500 border-white/5'}`}>
-                                            {t.status}
+                                            {t.status === 'Open' ? 'OUVERT' : t.status === 'Active' ? 'ACTIF' : t.status === 'Completed' ? 'TERMINÉ' : t.status}
                                         </div>
                                         <span className="text-[10px] text-slate-500 font-black uppercase tracking-widest">{t.teamSize} • {t.format}</span>
                                     </div>
                                 </div>
                                 <div className="flex gap-3 opacity-0 group-hover/card:opacity-100 transition-all transform translate-x-4 group-hover/card:translate-x-0">
                                     {t.status === 'Open' && (
-                                        <button onClick={() => handleForceStart(t.id)} className="p-3 glass-heavy bg-emerald-500/10 text-emerald-400 rounded-xl hover:bg-emerald-500 hover:text-white transition-all shadow-xl hover:-translate-y-1" title="Force Start">
+                                        <button onClick={() => handleForceStart(t.id)} className="p-3 glass-heavy bg-emerald-500/10 text-emerald-400 rounded-xl hover:bg-emerald-500 hover:text-white transition-all shadow-xl hover:-translate-y-1" title="Lancement Forcé">
                                             <FastForward size={20} />
                                         </button>
                                     )}
-                                    <button onClick={() => handleDeleteTournament(t.id)} className="p-3 glass-heavy bg-hot/10 text-hot rounded-xl hover:bg-hot hover:text-white transition-all shadow-xl hover:-translate-y-1" title="Terminate">
+                                    <button onClick={() => handleDeleteTournament(t.id)} className="p-3 glass-heavy bg-hot/10 text-hot rounded-xl hover:bg-hot hover:text-white transition-all shadow-xl hover:-translate-y-1" title="Terminer l'Opération">
                                         <Trash2 size={20} />
                                     </button>
                                 </div>
@@ -192,13 +192,13 @@ const Admin: React.FC = () => {
                         <Cpu size={150} className="text-rivals-neon" />
                     </div>
                     <h2 className="text-2xl font-black text-white mb-10 flex items-center gap-4 italic uppercase tracking-tighter">
-                        <Users size={32} className="text-rivals-neon" /> Subject Modification
+                        <Users size={32} className="text-rivals-neon" /> Modification de Sujet
                     </h2>
 
                     <div className="relative mb-10">
                         <input
                             type="text"
-                            placeholder="GENETIC OVERRIDE: SEARCH BY CALLSIGN..."
+                            placeholder="RETRICAGE GÉNÉTIQUE : RECHERCHE PAR NOM DE CODE..."
                             className="w-full glass bg-white/5 border border-white/10 rounded-2xl p-5 text-white font-black text-xs tracking-[0.2em] focus:ring-4 focus:ring-rivals-neon/10 focus:border-rivals-neon outline-none transition-all placeholder:text-slate-800 uppercase"
                             value={searchTerm}
                             onChange={e => setSearchTerm(e.target.value)}
@@ -211,7 +211,7 @@ const Admin: React.FC = () => {
                             {loading ? (
                                 [1, 2, 3, 4].map(i => <Skeleton key={i} className="h-14 w-full rounded-xl" />)
                             ) : filteredProfiles.length === 0 ? (
-                                <p className="text-slate-800 font-black text-center pt-20 uppercase tracking-[.4em] text-[9px]">Zero Subjects Found</p>
+                                <p className="text-slate-800 font-black text-center pt-20 uppercase tracking-[.4em] text-[9px]">Aucun Sujet Trouvé</p>
                             ) : filteredProfiles.map(p => (
                                 <button
                                     key={p.id}
@@ -243,14 +243,14 @@ const Admin: React.FC = () => {
                                         </div>
                                         <div className="min-w-0">
                                             <h3 className="text-white font-black text-2xl italic uppercase tracking-tighter truncate">{selectedProfile.username}</h3>
-                                            <p className="text-[10px] text-slate-500 font-bold tracking-widest uppercase mt-1">Status: Modification Ready</p>
+                                            <p className="text-[10px] text-slate-500 font-bold tracking-widest uppercase mt-1">Statut : Prêt pour Modification</p>
                                         </div>
                                     </div>
 
                                     <div className="space-y-8">
                                         <div className="space-y-3">
                                             <div className="flex justify-between items-center">
-                                                <label className="text-[9px] text-slate-500 uppercase font-black tracking-[0.3em] block">Combat Experience</label>
+                                                <label className="text-[9px] text-slate-500 uppercase font-black tracking-[0.3em] block">Expérience de Combat</label>
                                                 <span className="text-rivals-neon font-black text-[10px] italic">LVL {editLevel}</span>
                                             </div>
                                             <input
@@ -263,7 +263,7 @@ const Admin: React.FC = () => {
                                             />
                                         </div>
                                         <div className="space-y-4">
-                                            <label className="text-[9px] text-slate-500 uppercase font-black tracking-[0.3em] block">Strategic Elo Multiplier</label>
+                                            <label className="text-[9px] text-slate-500 uppercase font-black tracking-[0.3em] block">Multiplicateur Elo Stratégique</label>
                                             <div className="relative">
                                                 <input
                                                     type="number"
@@ -282,7 +282,7 @@ const Admin: React.FC = () => {
                                         onClick={handleSaveProfile}
                                         className="w-full bg-rivals-neon hover:bg-cyan-300 text-rivals-darker font-black py-5 rounded-2xl flex items-center justify-center gap-4 transition-all shadow-2xl shadow-rivals-neon/20 active:scale-95 transform hover:-translate-y-1 uppercase tracking-widest text-xs"
                                     >
-                                        <Save size={20} /> SYNC TO MATRIX
+                                        <Save size={20} /> SYNCHRO AVEC LA MATRICE
                                     </button>
                                 </div>
                             ) : (
@@ -291,7 +291,7 @@ const Admin: React.FC = () => {
                                         <Shield size={40} className="opacity-20" />
                                     </div>
                                     <p className="text-[10px] font-black uppercase tracking-[0.4em] leading-relaxed">
-                                        Awaiting subject selection. Select an entity from the localized transmission feed to initiate override protocols.
+                                        En attente de sélection du sujet. Sélectionnez une entité pour initier les protocoles d'écrasement.
                                     </p>
                                 </div>
                             )}

@@ -141,10 +141,10 @@ export const tournamentServiceSupabase = {
 
     registerPlayer: async (tournamentId: string, username: string, rivalsLevel: number): Promise<{ success: boolean, message: string }> => {
         const t = await tournamentServiceSupabase.getById(tournamentId);
-        if (!t || t.status !== 'Open') return { success: false, message: 'Registration closed' };
+        if (!t || t.status !== 'Open') return { success: false, message: 'Enregistrement clos' };
 
         const existing = t.pendingPlayers?.find(p => p.username.toLowerCase() === username.toLowerCase());
-        if (existing) return { success: false, message: 'Already registered' };
+        if (existing) return { success: false, message: 'Déjà enregistré' };
 
         const { error } = await supabase.from('pending_players').insert({
             tournament_id: tournamentId,
@@ -153,13 +153,13 @@ export const tournamentServiceSupabase = {
         });
 
         if (error) return { success: false, message: error.message };
-        return { success: true, message: 'Registered successfully' };
+        return { success: true, message: 'Enregistrement réussi' };
     },
 
     startTournament: async (id: string): Promise<{ success: boolean, message: string }> => {
         const t = await tournamentServiceSupabase.getById(id);
-        if (!t) return { success: false, message: 'Not found' };
-        if (t.status !== 'Open') return { success: false, message: 'Already started' };
+        if (!t) return { success: false, message: 'Non trouvé' };
+        if (t.status !== 'Open') return { success: false, message: 'Déjà commencé' };
 
         // 1. Team Balancing & Registration Conversion
         if (t.pendingPlayers && t.pendingPlayers.length > 0) {
@@ -195,7 +195,7 @@ export const tournamentServiceSupabase = {
         }
 
         const tUpdated = await tournamentServiceSupabase.getById(id);
-        if (!tUpdated || tUpdated.teams.length < 2) return { success: false, message: 'At least 2 teams required' };
+        if (!tUpdated || tUpdated.teams.length < 2) return { success: false, message: 'Au moins 2 équipes requises' };
 
         if (tUpdated.format === TournamentFormat.DOUBLE_ELIMINATION) {
             return tournamentServiceSupabase.startDoubleElimination(id, tUpdated.teams);
@@ -279,7 +279,7 @@ export const tournamentServiceSupabase = {
         }
 
         await supabase.from('tournaments').update({ status: 'Active' }).eq('id', id);
-        return { success: true, message: 'Tournament started. Brackets generated.' };
+        return { success: true, message: 'Tournoi lancé. Tableaux générés.' };
     },
 
     startDoubleElimination: async (id: string, teams: Team[]): Promise<{ success: boolean, message: string }> => {
@@ -387,7 +387,7 @@ export const tournamentServiceSupabase = {
         }
 
         await supabase.from('tournaments').update({ status: 'Active' }).eq('id', id);
-        return { success: true, message: 'Double Elimination started.' };
+        return { success: true, message: 'Élimination Double lancée.' };
     },
 
     updateMatch: async (tournamentId: string, matchId: string, scoreA: number, scoreB: number, winnerId?: string, isComplete: boolean = false): Promise<Tournament | null> => {

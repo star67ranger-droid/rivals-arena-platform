@@ -35,7 +35,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       <div className="min-h-screen bg-rivals-darker flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
           <div className="w-16 h-16 border-4 border-rivals-accent border-t-transparent rounded-full animate-spin" />
-          <p className="text-slate-500 font-black uppercase tracking-[0.3em] text-[10px] animate-pulse">Syncing Neural Link</p>
+          <p className="text-slate-500 font-black uppercase tracking-[0.3em] text-[10px] animate-pulse">Synchronisation Neurologique</p>
         </div>
       </div>
     );
@@ -64,26 +64,26 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               </h1>
               <div className="flex items-center gap-2">
                 <span className="h-1 w-8 bg-rivals-accent rounded-full" />
-                <p className="text-[10px] text-slate-500 font-mono tracking-[0.2em] font-bold">ULTIMATE EDITION</p>
+                <p className="text-[10px] text-slate-500 font-mono tracking-[0.2em] font-bold">ÉDITION ULTIME</p>
               </div>
             </div>
           </div>
 
           <nav className="space-y-2">
-            <p className="px-4 text-[10px] font-black text-slate-600 uppercase tracking-[0.3em] mb-4">Competitions</p>
-            <NavItem to="/" icon={LayoutDashboard} label="War Room" pathname={location.pathname} />
+            <p className="px-4 text-[10px] font-black text-slate-600 uppercase tracking-[0.3em] mb-4">Compétitions</p>
+            <NavItem to="/" icon={LayoutDashboard} label="Salle de Guerre" pathname={location.pathname} />
             {isAdmin && (
-              <NavItem to="/create" icon={PlusCircle} label="Launch Event" pathname={location.pathname} />
+              <NavItem to="/create" icon={PlusCircle} label="Opération Éclair" pathname={location.pathname} />
             )}
-            <NavItem to="/leaderboard" icon={Trophy} label="Hall of Fame" pathname={location.pathname} />
+            <NavItem to="/leaderboard" icon={Trophy} label="Panthéon" pathname={location.pathname} />
 
-            <p className="px-4 text-[10px] font-black text-slate-600 uppercase tracking-[0.3em] mt-10 mb-4">Identity</p>
-            <NavItem to={`/profile/${user?.id || 'me'}`} icon={User} label="Combat Profile" pathname={location.pathname} />
-            <NavItem to="/settings" icon={Settings} label="System Settings" pathname={location.pathname} />
+            <p className="px-4 text-[10px] font-black text-slate-600 uppercase tracking-[0.3em] mt-10 mb-4">Identité</p>
+            <NavItem to="/profile" icon={User} label="Fiche de Combat" pathname={location.pathname} />
+            <NavItem to="/settings" icon={Settings} label="Système" pathname={location.pathname} />
 
             {isAdmin && (
               <div className="mt-8 pt-8 border-t border-white/5">
-                <NavItem to="/admin" icon={Shield} label="Central Intelligence" pathname={location.pathname} />
+                <NavItem to="/admin" icon={Shield} label="Haut Commandement" pathname={location.pathname} />
               </div>
             )}
           </nav>
@@ -99,19 +99,19 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 <div className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-emerald-500 border-2 border-rivals-dark animate-pulse" />
               </div>
               <div className="overflow-hidden">
-                <p className="text-sm font-bold truncate text-white">{user?.username || 'Initiate'}</p>
+                <p className="text-sm font-bold truncate text-white">{user?.username || 'Initié'}</p>
                 <div className="flex items-center gap-1.5">
                   <span className="block w-1.5 h-1.5 rounded-full bg-rivals-accent shadow-[0_0_5px_#8b5cf6]" />
                   <p className="text-[9px] text-rivals-accent uppercase font-black tracking-widest leading-none">
-                    {user?.role || 'user'}
+                    {user?.role === 'admin' ? 'Administration' : 'Combattant'}
                   </p>
                 </div>
               </div>
             </div>
             <button
-              onClick={logout}
+              onClick={() => (useAuth as any)().signOut()}
               className="text-slate-500 hover:text-hot hover:bg-hot/10 p-2 rounded-lg transition-all"
-              title="Terminate Session"
+              title="Interrompre la Session"
             >
               <LogOut size={18} />
             </button>

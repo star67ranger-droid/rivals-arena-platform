@@ -36,7 +36,7 @@ const MatchCard: React.FC<MatchCardProps> = ({ match, onUpdate, isAdmin, isFinal
       return;
     }
     const winnerId = match.scoreA > match.scoreB ? match.teamA!.id : match.teamB!.id;
-    if (confirm(`Confirm tactical outcome?`)) {
+    if (confirm(`Confirmer le résultat tactique ?`)) {
       onUpdate(match.id, match.scoreA, match.scoreB, winnerId, true);
     }
   };
@@ -45,7 +45,7 @@ const MatchCard: React.FC<MatchCardProps> = ({ match, onUpdate, isAdmin, isFinal
     if (!team) {
       return (
         <div className="px-4 py-3 text-[10px] text-slate-600 font-black uppercase tracking-widest bg-white/5 h-12 flex items-center italic">
-          Awaiting Data...
+          Attente de données...
         </div>
       );
     }
@@ -115,14 +115,14 @@ const MatchCard: React.FC<MatchCardProps> = ({ match, onUpdate, isAdmin, isFinal
             onClick={handleFinish}
             className="bg-white text-rivals-darker hover:bg-rivals-neon hover:text-white text-[10px] font-black uppercase tracking-widest px-4 py-2 rounded-xl shadow-2xl flex items-center gap-2 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300"
           >
-            <CheckCircle size={14} /> End Operation
+            <CheckCircle size={14} /> Terminer l'Opération
           </button>
         </div>
       )}
 
       {isBye && (
         <div className="absolute inset-0 flex items-center justify-center bg-slate-950/60 backdrop-blur-[1px]">
-          <span className="text-[9px] font-black uppercase tracking-[0.3em] text-rivals-neon/40">Technical Passage</span>
+          <span className="text-[9px] font-black uppercase tracking-[0.3em] text-rivals-neon/40">Passage Technique</span>
         </div>
       )}
     </div>
@@ -141,7 +141,7 @@ const BracketColumn: React.FC<BracketColumnProps> = ({ matches, onUpdate, isAdmi
   return (
     <div className="flex flex-col justify-around gap-12 relative py-8">
       <div className="absolute top-0 left-0 w-full text-center -translate-y-8">
-        <span className="text-[10px] font-black text-slate-600 uppercase tracking-[0.4em]">Round {roundIndex + 1}</span>
+        <span className="text-[10px] font-black text-slate-600 uppercase tracking-[0.4em]">Tour {roundIndex + 1}</span>
       </div>
       {matches.map(m => (
         <div key={m.id} className="relative flex items-center">
@@ -175,7 +175,7 @@ const Bracket: React.FC<BracketProps> = ({ matches, onMatchUpdate, isAdmin }) =>
         <div className="space-y-8 text-center">
           <div className="inline-flex items-center gap-4 px-6 py-2 glass border border-rivals-neon/20 rounded-full">
             <Shield size={16} className="text-rivals-neon animate-pulse" />
-            <span className="text-xs font-black uppercase tracking-[0.3em] text-white">Winners Bracket</span>
+            <span className="text-xs font-black uppercase tracking-[0.3em] text-white">Tableau des Vainqueurs</span>
           </div>
           <div className="overflow-x-auto flex justify-center min-w-full px-12">
             <div className="flex gap-16">
@@ -199,7 +199,7 @@ const Bracket: React.FC<BracketProps> = ({ matches, onMatchUpdate, isAdmin }) =>
             <div className="absolute inset-0 bg-rivals-accent/5 blur-[100px] rounded-full" />
             <div className="relative mb-6 text-center">
               <Trophy className="text-rivals-neon w-16 h-16 mx-auto drop-shadow-[0_0_20px_rgba(34,211,238,0.6)]" />
-              <span className="text-[9px] font-black text-white uppercase tracking-[0.5em] block mt-4">Grand Final Verdict</span>
+              <span className="text-[9px] font-black text-white uppercase tracking-[0.5em] block mt-4">Verdict de la Grande Finale</span>
             </div>
             <MatchCard match={grandFinalMatch} onUpdate={onMatchUpdate} isAdmin={isAdmin} isFinal={true} />
           </div>
@@ -209,7 +209,7 @@ const Bracket: React.FC<BracketProps> = ({ matches, onMatchUpdate, isAdmin }) =>
         <div className="space-y-8 text-center pb-20">
           <div className="inline-flex items-center gap-4 px-6 py-2 glass border border-hot/20 rounded-full">
             <Zap size={16} className="text-hot animate-pulse" />
-            <span className="text-xs font-black uppercase tracking-[0.3em] text-white">Losers Bracket</span>
+            <span className="text-xs font-black uppercase tracking-[0.3em] text-white">Tableau de Consolidation</span>
           </div>
           <div className="overflow-x-auto flex justify-center min-w-full px-12">
             <div className="flex gap-12">
@@ -261,7 +261,7 @@ const Bracket: React.FC<BracketProps> = ({ matches, onMatchUpdate, isAdmin }) =>
           <div className="absolute inset-0 bg-rivals-accent/5 blur-[100px] rounded-full animate-pulse" />
           <div className="relative mb-8 text-center animate-bounce">
             <Trophy className="text-rivals-neon w-20 h-20 mx-auto" />
-            <span className="text-[10px] font-black text-white uppercase tracking-[0.5em] block mt-4">Apex Verdict</span>
+            <span className="text-[10px] font-black text-white uppercase tracking-[0.5em] block mt-4">Verdict Suprême</span>
           </div>
           <MatchCard match={finalMatch} onUpdate={onMatchUpdate} isAdmin={isAdmin} isFinal={true} />
         </div>
